@@ -24,7 +24,7 @@ sap.ui.define([
 
 			// set products demo model on this sample
 			oInterfacesModel = new JSONModel(sap.ui.require.toUrl("demo/mock") + "/interfaces.json");
-			oInterfacesModel.setSizeLimit(100);
+			oInterfacesModel.setSizeLimit(1000);
 			this.setModel(oInterfacesModel, "interfaces");
 
 			oRouter = this.getRouter();
