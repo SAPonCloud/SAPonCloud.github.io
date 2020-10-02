@@ -33,22 +33,13 @@ sap.ui.define(
 			},
 
 			getHelper: function () {
-				// var oFCL = this.getRootControl().byId("flexibleColumnLayout"),
-				// 	oParams = UriParameters.fromQuery(location.search),
-				// 	oSettings = {
-				// 		defaultTwoColumnLayoutType: LayoutType.TwoColumnsMidExpanded,
-				// 		defaultThreeColumnLayoutType: LayoutType.ThreeColumnsEndExpanded,
-				// 		mode: oParams.get("mode"),
-				// 		maxColumnsCount: oParams.get("max")
-				// 	};
-				// return FlexibleColumnLayoutSemanticHelper.getInstanceFor(oFCL, oSettings);
 				return this._getFcl().then(function (oFCL) {
 					// var oParams = UriParameters.fromQuery(location.search),
 					var oSettings = {
 						defaultTwoColumnLayoutType: LayoutType.TwoColumnsMidExpanded,
 						defaultThreeColumnLayoutType: LayoutType.ThreeColumnsEndExpanded,
-						initialColumnsCount: 2,		//oParams.get("mode"),
-						maxColumnsCount: 3			//oParams.get("max"),
+						initialColumnsCount: 1, //oParams.get("mode"),
+						maxColumnsCount: 3 //oParams.get("max"),
 					};
 
 					return FlexibleColumnLayoutSemanticHelper.getInstanceFor(oFCL, oSettings);
@@ -74,12 +65,18 @@ sap.ui.define(
 				if (!this._sContentDensityClass) {
 					if (!Device.support.touch) {
 						this._sContentDensityClass = "sapUiSizeCompact";
+						// this._sContentDensityClass = "sapUiSizeCondensed";
 					} else {
 						this._sContentDensityClass = "sapUiSizeCozy";
 					}
 				}
 				return this._sContentDensityClass;
-			},
+			}
+
+			// toggleFooter: function (idSmartForm) {
+			// 	this.getPage().setShowFooter(this.getView().byId(idSmartForm).getEditable());
+			// 	// this.getPage().setShowFooter(!this.getPage().getShowFooter());
+			// }
 		});
 	}
 );

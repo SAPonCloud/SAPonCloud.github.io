@@ -1,31 +1,29 @@
-<mvc:View 
-	controllerName="zlhsl.controller.App"
-	xmlns="sap.f" 
+<mvc:View controllerName="zlhsl.controller.App"
+	xmlns="sap.f"
 	xmlns:m="sap.m"
-	xmlns:mvc="sap.ui.core.mvc" 
+	xmlns:mvc="sap.ui.core.mvc"
 	xmlns:core="sap.ui.core"
 	displayBlock="true"
 	height="100%">
 	<m:Page>
 		<m:customHeader>
-			<ShellBar
-					title="{i18n>shellbar.title}" secondTitle="{i18n>shellbar.secondTitle}"
-					  homeIcon="sap-icon://sap-ui5"
-					  showCopilot="false"
-					  showSearch="true"
-					  showNotifications="false"
-					  showProductSwitcher="true"
-					  showNavButton="{= ${layout>/layout} === 'EndColumnFullScreen'}"
-					  navButtonPressed=".handleBackButtonPressed">
+			<ShellBar title="{i18n>shellbar.title}"
+				secondTitle="{i18n>shellbar.secondTitle}"
+				homeIcon="sap-icon://sap-ui5"
+				showCopilot="false"
+				showSearch="true"
+				showNotifications="false"
+				showProductSwitcher="true"
+				showNavButton="{= ${layout>/layout} === 'EndColumnFullScreen'}"
+				navButtonPressed=".handleBackButtonPressed">
 				<profile>
-					<Avatar initials="SG"/>
+					<Avatar initials="SG" />
 				</profile>
 			</ShellBar>
 		</m:customHeader>
-		<FlexibleColumnLayout
-			id="flexibleColumnLayout"
-			stateChange=".onStateChanged"			
+		<FlexibleColumnLayout id="flexibleColumnLayout"
+			stateChange=".onStateChanged"
 			backgroundDesign="Solid"
-			layout="{layout>/layout}"/>
-	</m:Page>	
+			layout="{layout>/layout}" />
+	</m:Page>
 </mvc:View>

@@ -38,9 +38,9 @@ sap.ui.define(["sap/ui/core/mvc/Controller"], function (Controller) {
 			this._updateUIElements();
 
 			// Save the current route name
-			this.currentRouteName = sRouteName;				// The found rout
-			this.currentFunction = oArguments.functionid;	// Rout parameters passed to method navTo() method
-			this.currentInterface = oArguments.interfaceid;	// Rout parameters passed to method navTo() method
+			this.currentRouteName = sRouteName; // The found rout
+			this.currentFunction = oArguments.functionid; // Rout parameters passed to method navTo() method
+			this.currentInterface = oArguments.interfaceid; // Rout parameters passed to method navTo() method
 		},
 
 		onStateChanged: function (oEvent) {
@@ -51,8 +51,11 @@ sap.ui.define(["sap/ui/core/mvc/Controller"], function (Controller) {
 
 			// Replace the URL with the new layout if a navigation arrow was used
 			if (bIsNavigationArrow) {
-				this.oRouter.navTo(this.currentRouteName,
-					{ layout: sLayout, functionid: this.currentFunction, interfaceid: this.currentInterface },
+				this.oRouter.navTo(this.currentRouteName, {
+						layout: sLayout,
+						functionid: this.currentFunction,
+						interfaceid: this.currentInterface
+					},
 					true);
 			}
 		},
@@ -70,6 +73,10 @@ sap.ui.define(["sap/ui/core/mvc/Controller"], function (Controller) {
 		onExit: function () {
 			this.oRouter.detachRouteMatched(this.onRouteMatched, this);
 			this.oRouter.detachBeforeRouteMatched(this.onBeforeRouteMatched, this);
+		},
+
+		handleBackButtonPressed: function () {
+			window.history.go(-1);
 		}
 	});
 });

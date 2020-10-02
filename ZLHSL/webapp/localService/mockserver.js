@@ -1,5 +1,5 @@
 sap.ui.define([
-	"sap/ui/core/util/MockServer",		
+	"sap/ui/core/util/MockServer",
 	"sap/base/util/UriParameters"
 ], function (MockServer, UriParameters) {
 	"use strict";
@@ -8,7 +8,7 @@ sap.ui.define([
 		init: function () {
 			// create
 			var oMockServer = new MockServer({
-				rootUri: "/sap/opu/odata/SAP/ZLHSL_TIMCONFIG_SRV/"	
+				rootUri: "/sap/opu/odata/SAP/ZLHSL_TIMCONFIG_SRV/"
 				//This is path of OData in ABAP system
 			});
 
@@ -22,7 +22,7 @@ sap.ui.define([
 
 			// simulate
 			var sPath = "../localService";
-			oMockServer.simulate(sPath + "/metadata.xml"); 
+			oMockServer.simulate(sPath + "/metadata.xml");
 			//This is going to mock the rootUri i.e. Odata with a local metadata.xml
 
 			// start

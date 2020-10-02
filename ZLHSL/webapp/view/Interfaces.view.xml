@@ -1,0 +1,291 @@
+<mvc:View displayBlock="true"
+	controllerName="zlhsl.controller.Interfaces"
+	xmlns:mvc="sap.ui.core.mvc"
+	xmlns="sap.m"
+	xmlns:f="sap.f"
+	xmlns:layout="sap.ui.layout"
+	xmlns:smartForm="sap.ui.comp.smartform"
+	xmlns:smartField="sap.ui.comp.smartfield"
+	height="100%">
+
+	<f:DynamicPage id="dynamicPageId"
+		headerExpanded="{/headerExpanded}"
+		toggleHeaderOnTitleClick="{/titleClickable}">
+		<!-- DynamicPage Title -->
+		<f:title>
+			<f:DynamicPageTitle>
+				<f:heading>
+					<Title text="{functions>FunctionID}" />
+				</f:heading>
+				<f:expandedContent >
+					<Label text="{functions>FunctionText}"
+						design="Bold" />
+				</f:expandedContent>
+				<f:snappedContent>
+					<Label text="{functions>FunctionText}" />
+				</f:snappedContent>
+				<f:snappedTitleOnMobile>
+					<Title text="{functions>FunctionText}" />
+				</f:snappedTitleOnMobile>
+				<!-- <f:content>
+					<OverflowToolbar>
+						<GenericTag text="SR" status="Error" press="onPressOpenPopover" design="StatusIconHidden">
+							<ObjectNumber number="2" unit="M" emphasized="false" state="Error" />
+						</GenericTag>
+					</OverflowToolbar>
+				</f:content> -->
+				<!-- <f:actions>
+					<Button text="Edit" type="Emphasized" press="toggleAreaPriority" />
+					<Button text="Delete" type="Transparent" />
+					<Button text="Copy" type="Transparent" />
+					<Button text="Button with layoutData" type="Transparent" press="onPressOpenPopover">
+						<layoutData>
+							<OverflowToolbarLayoutData priority="AlwaysOverflow" closeOverflowOnInteraction="false" />
+						</layoutData>
+					</Button>
+				</f:actions> -->
+				<f:navigationActions>
+					<!-- <Button icon="sap-icon://full-screen" type="Transparent" />
+					<Button icon="sap-icon://exit-full-screen" type="Transparent" />
+					<Button icon="sap-icon://decline" type="Transparent" /> -->
+					<OverflowToolbarButton type="Transparent"
+						icon="sap-icon://full-screen"
+						press="handleFullScreen"
+						id="enterFullScreenBtn"
+						tooltip="Enter Full Screen Mode"
+						visible="{= ${layout>/actionButtonsInfo/midColumn/fullScreen} !== null }" />
+					<OverflowToolbarButton type="Transparent"
+						icon="sap-icon://exit-full-screen"
+						press="handleExitFullScreen"
+						id="exitFullScreenBtn"
+						tooltip="Exit Full Screen Mode"
+						visible="{= ${layout>/actionButtonsInfo/midColumn/exitFullScreen} !== null }" />
+					<OverflowToolbarButton type="Transparent"
+						icon="sap-icon://decline"
+						press="handleClose"
+						tooltip="Close column"
+						visible="{= ${layout>/actionButtonsInfo/midColumn/closeColumn} !== null }" />
+
+				</f:navigationActions>
+			</f:DynamicPageTitle>
+		</f:title>
+		<!-- DynamicPage Header -->
+		<f:header>
+			<f:DynamicPageHeader pinnable="true">
+				<layout:HorizontalLayout allowWrapping="true">
+					<layout:VerticalLayout class="sapUiMediumMarginEnd"
+						width="10em">
+						<ObjectAttribute title="Partner"/>
+						<ObjectStatus text="{functions>Partner}"
+							state="Information" />
+					</layout:VerticalLayout>
+					<layout:VerticalLayout class="sapUiMediumMarginEnd"
+						width="10em">
+						<ObjectAttribute title="Partner Type" />
+						<ObjectStatus text="{functions>PartnerType}"
+							state="Information" />
+					</layout:VerticalLayout>
+					<layout:VerticalLayout class="sapUiMediumMarginEnd">
+						<ObjectAttribute title="Active" />
+						<Switch state="{functions>Active}"
+							customTextOn="Yes"
+							customTextOff="No"
+							enabled="false">
+							<layoutData>
+								<FlexItemData backgroundDesign="Transparent"
+									growFactor="1" />
+							</layoutData>
+						</Switch>
+					</layout:VerticalLayout>
+				</layout:HorizontalLayout>
+			</f:DynamicPageHeader>
+		</f:header>
+		<f:content>
+			<VBox id="idInteracePage">
+				<OverflowToolbar class="sapFDynamicPageAlignContent sapUiTinyMarginBeginEnd">
+					<Title text="Interfaces ({interfaces>/length})" titleStyle="H2"/>
+					<!-- <Title text="Interfaces ({interfaces>/length})" level="H2"/> -->
+					<ToolbarSpacer />
+					<SearchField search=".onSearch"
+						width="17.5rem" />
+					<OverflowToolbarButton icon="sap-icon://sort"
+						text="Sort"
+						type="Transparent"
+						press=".onSort" />
+					<OverflowToolbarButton icon="sap-icon://filter"
+						text="Filter"
+						type="Transparent"
+						press=".onFilter" />
+					<OverflowToolbarButton icon="sap-icon://add"
+						text="Create"
+						type="Transparent"
+						press=".onCreate" />
+				</OverflowToolbar>
+				<ScrollContainer height="200px"
+					horizontal="false"
+					vertical="true">
+					<Table id="idInterfaceTable"
+						modeAnimationOn="true"
+						noDataText="No interface assigned to this function."
+						sticky="ColumnHeaders"
+						class="sapFDynamicPageAlignContent sapUiTinyMarginBeginEnd"
+						width="auto"
+						items="{interfaces>/}"
+						mode="SingleSelectLeft"
+						alternateRowColors="true"
+						selectionChange=".onSelectionChange">
+						<!-- <headerToolbar>
+							<Toolbar>
+								<Title text="Interfaces ({interfaces>/length})" level="H2" />
+							</Toolbar>
+						</headerToolbar> -->
+						<columns>
+							<Column >
+								<Text text="Interface" />
+							</Column>
+							<Column minScreenWidth="Tablet"
+								demandPopin="true"
+								popinDisplay="WithoutHeader">
+								<Text text="Interface Name" />
+							</Column>
+							<Column minScreenWidth="Tablet"
+								demandPopin="false">
+								<Text text="Interface Type" />
+							</Column>
+							<Column minScreenWidth="Tablet"
+								demandPopin="false">
+								<Text text="Direction" />
+							</Column>
+							<Column minScreenWidth="Tablet"
+								demandPopin="false">
+								<Text text="Message Type" />
+							</Column>
+							<Column minScreenWidth="Desktop"
+								demandPopin="false">
+								<Text text="Message Code" />
+							</Column>
+							<Column minScreenWidth="Desktop">
+								<Text text="Message Function" />
+							</Column>
+							<Column minScreenWidth="Desktop">
+								<Text text="Idoc Type" />
+							</Column>
+							<Column minScreenWidth="Tablet"
+								demandPopin="false">
+								<Text text="Idoc Extension" />
+							</Column>
+							<Column demandPopin="true">
+								<Text text="Active" />
+							</Column>
+							<Column minScreenWidth="Tablet">
+								<Text text="Actions" />
+							</Column>
+						</columns>
+						<items>
+							<ColumnListItem type="Navigation"
+								press=".onListItemPress">
+								<cells>
+									<ObjectIdentifier title="{interfaces>InterfaceID}" />
+									<Text text="{interfaces>InterfaceText}" />
+									<Text text="{interfaces>InterfaceType}" />
+									<Text text="{interfaces>Direction}" />
+									<Text text="{interfaces>MessageType}" />
+									<Text text="{interfaces>MessageCode}" />
+									<Text text="{interfaces>MessageFunc}" />
+									<Text text="{interfaces>IdocType}" />
+									<Text text="{interfaces>IDocExtn}" />
+									<Switch state="{interfaces>InterfaceActive}"
+										customTextOn="Yes"
+										customTextOff="No"
+										enabled="false">
+										<layoutData>
+											<FlexItemData backgroundDesign="Transparent"
+												growFactor="1" />
+										</layoutData>
+									</Switch>
+									<OverflowToolbar class="sapFDynamicPageAlignContent"
+										style="Clear">
+										<!-- <OverflowToolbarButton icon="sap-icon://edit" text="Edit" type="Transparent" press=".onEdit" /> -->
+										<OverflowToolbarButton icon="sap-icon://duplicate"
+											text="Clone"
+											type="Transparent"
+											press=".onClone" />
+										<OverflowToolbarButton icon="sap-icon://delete"
+											text="Delete"
+											type="Transparent"
+											press=".onDelete" />
+									</OverflowToolbar>
+								</cells>
+							</ColumnListItem>
+						</items>
+					</Table>
+				</ScrollContainer>
+				<smartForm:SmartForm id="idInterfaceSmartForm"
+					editTogglable="true"
+					class="editableForm"
+					editable="false"
+					editToggled=".onEditToggled"
+					visible="false"
+					validationError=".onValidationError"
+					validationSuccess=".onValidationSuccess">
+
+					<smartForm:Group id="idSFGroup1">
+						<smartForm:GroupElement label="Interface">
+							<smartField:SmartField value="{InterfaceID}" />
+						</smartForm:GroupElement>
+						<smartForm:GroupElement label="Name">
+							<smartField:SmartField value="{InterfaceText}" />
+							<!-- contextEditable="true" editable="true" name="interfacetext" /> -->
+						</smartForm:GroupElement>
+						<smartForm:GroupElement label="Interface Type">
+							<smartField:SmartField value="{InterfaceType}" />
+						</smartForm:GroupElement>
+						<smartForm:GroupElement label="Direction">
+							<smartField:SmartField value="{Direction}" />
+						</smartForm:GroupElement>
+						<smartForm:GroupElement label="Active">
+							<smartField:SmartField value="{InterfaceActive}">
+								<smartField:configuration>
+									<smartField:Configuration controlType="checkBox" />
+								</smartField:configuration>
+							</smartField:SmartField>
+						</smartForm:GroupElement>
+					</smartForm:Group>
+					<smartForm:Group id="idSFGroup2">
+						<smartForm:GroupElement label="Message type">
+							<smartField:SmartField value="{MessageType}" />
+						</smartForm:GroupElement>
+						<smartForm:GroupElement label="Message Code">
+							<smartField:SmartField value="{MessageCode}" />
+						</smartForm:GroupElement>
+						<smartForm:GroupElement label="Basic type">
+							<smartField:SmartField value="{IDocType}" />
+						</smartForm:GroupElement>
+						<smartForm:GroupElement label="Extension">
+							<smartField:SmartField value="{IDocExtn}" />
+						</smartForm:GroupElement>
+
+					</smartForm:Group>
+				</smartForm:SmartForm>
+			</VBox>
+		</f:content>
+		<!-- DynamicPage Footer -->
+		<f:footer>
+			<OverflowToolbar>
+				<Button icon="sap-icon://message-popup"
+					text="{/messagesLength}"
+					type="Emphasized"
+					press=".onMessageButtonPress"
+					visible="{= !!${/messagesLength}}" />
+				<ToolbarSpacer />
+				<Button type="Accept"
+					text="Save"
+					id="idSaveBtn"
+					press="onSave" />
+				<Button type="Reject"
+					text="Cancel"
+					press="onCancel" />
+			</OverflowToolbar>
+		</f:footer>
+	</f:DynamicPage>
+</mvc:View>

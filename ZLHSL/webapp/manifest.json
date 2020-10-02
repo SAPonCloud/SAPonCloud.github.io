@@ -59,6 +59,7 @@
 				"dataSource": "mainService",
 				"type": "sap.ui.model.odata.v2.ODataModel",
 				"settings": {
+					"useBatch": false,
 					"odataVersion": "2.0"
 				}
 			},
@@ -76,11 +77,12 @@
 				"viewPath": "zlhsl.view",
 				"controlId": "flexibleColumnLayout",
 				"transition": "slide",
-				"bypassed": {},
+				"bypassed": {
+					"target": "master"
+				},
 				"async": true
 			},
-			"routes": [
-				{
+			"routes": [{
 					"pattern": ":layout:",
 					"name": "master",
 					"target": [
@@ -107,15 +109,17 @@
 			],
 			"targets": {
 				"master": {
-					"viewName": "Function",
-					"controlAggregation": "beginColumnPages"
+					"viewName": "Functions",
+					"controlAggregation": "beginColumnPages",
+					"transition": "slide"
 				},
 				"detail": {
-					"viewName": "Interface",
-					"controlAggregation": "midColumnPages"
+					"viewName": "Interfaces",
+					"controlAggregation": "midColumnPages",
+					"transition": "slide"
 				},
 				"detailDetail": {
-					"viewName": "Segment",
+					"viewName": "SegFields",
 					"controlAggregation": "endColumnPages"
 				}
 			}

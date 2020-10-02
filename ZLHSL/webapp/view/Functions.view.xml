@@ -1,0 +1,187 @@
+<mvc:View controllerName="zlhsl.controller.Functions"
+	xmlns="sap.m"
+	xmlns:f="sap.f"
+	xmlns:smartForm="sap.ui.comp.smartform"
+	xmlns:smartField="sap.ui.comp.smartfield"
+	xmlns:mvc="sap.ui.core.mvc"
+	displayBlock="true"
+	xmlns:html="http://www.w3.org/1999/xhtml"
+	xmlns:app="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
+	height="100%">
+	<f:DynamicPage id="dynamicPageId"
+		toggleHeaderOnTitleClick="true">
+		<!-- DynamicPage Title -->
+		<f:title>
+			<f:DynamicPageTitle>
+				<f:heading >
+					<Title id="entityTitle"
+						text="{i18n>title.text.Functions}" />
+				</f:heading>
+			</f:DynamicPageTitle>
+		</f:title>
+
+		<!-- DynamicPage Content -->
+		<f:content>
+			<VBox fitContainer="false" >
+				<OverflowToolbar class="sapFDynamicPageAlignContent" >
+					<ToolbarSpacer />
+					<SearchField search=".onSearch"
+						width="17.5rem" />
+					<OverflowToolbarButton icon="sap-icon://sort"
+						text="Sort"
+						type="Transparent"
+						press=".onSort" />
+					<OverflowToolbarButton icon="sap-icon://filter"
+						text="Filter"
+						type="Transparent"
+						press=".onFilter" />
+					<OverflowToolbarButton icon="sap-icon://add"
+						text="Create"
+						type="Transparent"
+						press=".onCreate" />
+				</OverflowToolbar>
+				<ScrollContainer height="240px"
+					horizontal="false" 
+					vertical="true"
+					 >
+					<Table id="functionsTable" 
+						mode="SingleSelectLeft"
+						selectionChange=".onSelectionChange"
+						inset="false"
+						items="{
+							path: '/FunctionSet',
+							parameters: {
+								expand: 'ToInterfaces'
+							},
+							sorter: {
+								path: 'FunctionID'
+							}
+						}"
+						growingScrollToLoad="true"
+						growing="true"
+						class="sapUiSizeCompact sapFDynamicPageAlignContent sapUiTinyMargin"
+						width="auto"
+						alternateRowColors="true"
+						sticky="ColumnHeaders"
+						updateFinished=".onUpdateFinished">
+						<columns>
+							<Column width="12em" class="sapUiTinyMargin">
+								<Text text="Function ID" />
+							</Column>
+							<Column minScreenWidth="Desktop"
+								demandPopin="true"
+								popinDisplay="WithoutHeader">
+								<Text text="Function Name" />
+							</Column>
+							<Column minScreenWidth="Tablet"
+								demandPopin="true"
+								popinDisplay="Inline">
+								<Text text="Partner" />
+							</Column>
+							<Column minScreenWidth="Tablet"
+								demandPopin="true"
+								popinDisplay="Inline">
+								<Text text="Partner Type" />
+							</Column>
+							<Column >
+								<Text text="Active" />
+							</Column>
+							<Column minScreenWidth="Tablet">
+								<Text text="Actions" />
+							</Column>
+						</columns>
+						<items>
+							<ColumnListItem type="Navigation"
+								press=".onListItemPress">
+								<cells>
+									<ObjectIdentifier title="{FunctionID}" />
+									<Text text="{FunctionText}" />
+									<Text text="{Partner}" />
+									<Text text="{PartnerType}" />
+									<!-- <Text text="{Active}" /> -->
+									<Switch state="{Active}"
+										customTextOn="Yes"
+										customTextOff="No"
+										enabled="false">
+										<layoutData>
+											<FlexItemData growFactor="0" />
+										</layoutData>
+									</Switch>
+									<OverflowToolbar class="sapFDynamicPageAlignContent"
+										style="Clear">
+										<!-- <OverflowToolbarButton icon="sap-icon://edit" text="Edit" type="Transparent" press=".onEdit" /> -->
+										<OverflowToolbarButton icon="sap-icon://duplicate"
+											text="Clone"
+											type="Transparent"
+											press=".onClone" />
+										<OverflowToolbarButton icon="sap-icon://delete"
+											text="Delete"
+											type="Transparent"
+											press=".onDelete" />
+									</OverflowToolbar>
+								</cells>
+							</ColumnListItem>
+						</items>
+					</Table>
+				</ScrollContainer>
+				<smartForm:SmartForm id="idSmartForm"
+					editTogglable="true"
+					class="editableForm"
+					editable="false"
+					editToggled=".onEditToggled" formatError=".onFormatError" parseError=".onFormatError"
+					visible="false" checked=".onFormatError"
+					validationError=".onValidationError"
+					validationSuccess=".onValidationSuccess">
+					<!-- <smartForm:layout>
+						<smartForm:ColumnLayout columnsM="2" columnsL="3" columnsXL="4"/>
+					</smartForm:layout> -->
+
+					<smartForm:Group id="idSFGroup">
+						<smartForm:GroupElement label="Function">
+							<smartField:SmartField value="{FunctionID}" />
+						</smartForm:GroupElement>
+						<smartForm:GroupElement label="Function Name">
+							<smartField:SmartField value="{FunctionText}" />
+						</smartForm:GroupElement>
+						<smartForm:GroupElement label="Partner">
+							<smartField:SmartField value="{Partner}" />
+						</smartForm:GroupElement>
+						<smartForm:GroupElement label="Partner Type">
+							<smartField:SmartField value="{PartnerType}" />
+						</smartForm:GroupElement>
+						<smartForm:GroupElement label="Active">
+							<smartField:SmartField value="{Active}">
+								<smartField:configuration>
+									<smartField:Configuration controlType="checkBox" />
+								</smartField:configuration>
+							</smartField:SmartField>
+							<!-- <Switch id="idSwitch" state="{Active}" customTextOn="Yes" customTextOff="No" enabled="false">
+								<layoutData>
+									<FlexItemData growFactor="0" />
+								</layoutData>
+							</Switch> -->
+						</smartForm:GroupElement>
+					</smartForm:Group>
+				</smartForm:SmartForm>
+			</VBox>
+		</f:content>
+		<!-- DynamicPage Footer -->
+		<f:footer>
+			<OverflowToolbar>
+				<Button icon="sap-icon://message-popup"
+					text="messagesLength}"
+					type="Emphasized"
+					press="onMessageButtonPress"
+					visible="{= !!$messagesLength}}" />
+				<ToolbarSpacer />
+				<Button type="Accept"
+					text="Save"
+					press="onSave"
+					id="idSaveBtn" />
+				<Button type="Reject"
+					text="Cancel"
+					press="onCancel" />
+			</OverflowToolbar>
+		</f:footer>
+	</f:DynamicPage>
+</mvc:View>
