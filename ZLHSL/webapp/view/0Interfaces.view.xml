@@ -15,19 +15,39 @@
 		<f:title>
 			<f:DynamicPageTitle>
 				<f:heading>
-					<Title text="{FunctionID}" />
+					<Title text="{functions>FunctionID}" />
 				</f:heading>
 				<f:expandedContent >
-					<Label text="{FunctionText}"
+					<Label text="{functions>FunctionText}"
 						design="Bold" />
 				</f:expandedContent>
 				<f:snappedContent>
-					<Label text="{FunctionText}" />
+					<Label text="{functions>FunctionText}" />
 				</f:snappedContent>
 				<f:snappedTitleOnMobile>
-					<Title text="{FunctionText}" />
+					<Title text="{functions>FunctionText}" />
 				</f:snappedTitleOnMobile>
+				<!-- <f:content>
+					<OverflowToolbar>
+						<GenericTag text="SR" status="Error" press="onPressOpenPopover" design="StatusIconHidden">
+							<ObjectNumber number="2" unit="M" emphasized="false" state="Error" />
+						</GenericTag>
+					</OverflowToolbar>
+				</f:content> -->
+				<!-- <f:actions>
+					<Button text="Edit" type="Emphasized" press="toggleAreaPriority" />
+					<Button text="Delete" type="Transparent" />
+					<Button text="Copy" type="Transparent" />
+					<Button text="Button with layoutData" type="Transparent" press="onPressOpenPopover">
+						<layoutData>
+							<OverflowToolbarLayoutData priority="AlwaysOverflow" closeOverflowOnInteraction="false" />
+						</layoutData>
+					</Button>
+				</f:actions> -->
 				<f:navigationActions>
+					<!-- <Button icon="sap-icon://full-screen" type="Transparent" />
+					<Button icon="sap-icon://exit-full-screen" type="Transparent" />
+					<Button icon="sap-icon://decline" type="Transparent" /> -->
 					<OverflowToolbarButton type="Transparent"
 						icon="sap-icon://full-screen"
 						press="handleFullScreen"
@@ -56,18 +76,18 @@
 					<layout:VerticalLayout class="sapUiMediumMarginEnd"
 						width="10em">
 						<ObjectAttribute title="Partner" />
-						<ObjectStatus text="{Partner}"
+						<ObjectStatus text="{functions>Partner}"
 							state="Information" />
 					</layout:VerticalLayout>
 					<layout:VerticalLayout class="sapUiMediumMarginEnd"
 						width="10em">
 						<ObjectAttribute title="Partner Type" />
-						<ObjectStatus text="{PartnerType}"
+						<ObjectStatus text="{functions>PartnerType}"
 							state="Information" />
 					</layout:VerticalLayout>
 					<layout:VerticalLayout class="sapUiMediumMarginEnd">
 						<ObjectAttribute title="Active" />
-						<Switch state="{Active}"
+						<Switch state="{functions>Active}"
 							customTextOn="Yes"
 							customTextOff="No"
 							enabled="false">
@@ -83,8 +103,7 @@
 		<f:content>
 			<VBox id="idInteracePage">
 				<OverflowToolbar class="sapFDynamicPageAlignContent sapUiTinyMarginBeginEnd">
-					<Title id="idTabTitle"
-						text="Interfaces"
+					<Title text="Interfaces ({interfaces>/length})"
 						titleStyle="H2" />
 					<!-- <Title text="Interfaces ({interfaces>/length})" level="H2"/> -->
 					<ToolbarSpacer />
@@ -92,19 +111,18 @@
 						width="17.5rem" />
 					<OverflowToolbarButton icon="sap-icon://sort"
 						text="Sort"
-						tooltip="Sort Interface"
 						type="Transparent"
 						press=".onSort" />
-					<!-- <OverflowToolbarButton icon="sap-icon://filter" text="Filter" type="Transparent" press=".onFilter" /> -->
+					<OverflowToolbarButton icon="sap-icon://filter"
+						text="Filter"
+						type="Transparent"
+						press=".onFilter" />
 					<OverflowToolbarButton icon="sap-icon://add"
 						text="Create"
-						tooltip="Create Interface"
 						type="Transparent"
 						press=".onCreate" />
 				</OverflowToolbar>
-				<ScrollContainer id="idScrollContainer"
-					class="sapUiSmallMarginBottom"
-					height="215px"
+				<ScrollContainer height="200px"
 					horizontal="false"
 					vertical="true">
 					<Table id="idInterfaceTable"
@@ -113,16 +131,15 @@
 						sticky="ColumnHeaders"
 						class="sapFDynamicPageAlignContent sapUiTinyMarginBeginEnd"
 						width="auto"
-						items="{
-							path: 'ToInterfaces',
-							sorter: {
-								path: 'InterfaceID'
-							} 
-						}"
+						items="{interfaces>/}"
 						mode="SingleSelectLeft"
 						alternateRowColors="true"
-						selectionChange=".onSelectionChange"
-						updateFinished=".onUpdateFinished">
+						selectionChange=".onSelectionChange">
+						<!-- <headerToolbar>
+							<Toolbar>
+								<Title text="Interfaces ({interfaces>/length})" level="H2" />
+							</Toolbar>
+						</headerToolbar> -->
 						<columns>
 							<Column >
 								<Text text="Interface" />
@@ -169,21 +186,16 @@
 							<ColumnListItem type="Navigation"
 								press=".onListItemPress">
 								<cells>
-									<ObjectIdentifier title="{InterfaceID}" />
-									<Text text="{InterfaceText}" />
-									<Text text="{InterfaceType}" />
-									<ObjectStatus icon="{path: 'Direction', 
-									formatter: '.formatter.directionIcon'}"
-										text="{path: 'Direction', 
-									formatter: '.formatter.directionText'}"
-										state="{path: 'Direction', 
-									formatter: '.formatter.directionState'}" />
-									<Text text="{MessageType}" />
-									<Text text="{MessageCode}" />
-									<Text text="{MessageFunc}" />
-									<Text text="{IdocType}" />
-									<Text text="{IDocExtn}" />
-									<Switch state="{InterfaceActive}"
+									<ObjectIdentifier title="{interfaces>InterfaceID}" />
+									<Text text="{interfaces>InterfaceText}" />
+									<Text text="{interfaces>InterfaceType}" />
+									<Text text="{interfaces>Direction}" />
+									<Text text="{interfaces>MessageType}" />
+									<Text text="{interfaces>MessageCode}" />
+									<Text text="{interfaces>MessageFunc}" />
+									<Text text="{interfaces>IdocType}" />
+									<Text text="{interfaces>IDocExtn}" />
+									<Switch state="{interfaces>InterfaceActive}"
 										customTextOn="Yes"
 										customTextOff="No"
 										enabled="false">
@@ -194,6 +206,7 @@
 									</Switch>
 									<OverflowToolbar class="sapFDynamicPageAlignContent"
 										style="Clear">
+										<!-- <OverflowToolbarButton icon="sap-icon://edit" text="Edit" type="Transparent" press=".onEdit" /> -->
 										<OverflowToolbarButton icon="sap-icon://duplicate"
 											text="Clone"
 											type="Transparent"
@@ -216,7 +229,6 @@
 						editTogglable="true"
 						class="editableForm"
 						editable="false"
-						entityType="ZLHSL_TIMCONFIG_SRV.Interface"
 						editToggled=".onEditToggled"
 						visible="false"
 						validationError=".onValidationError"
@@ -228,6 +240,7 @@
 							</smartForm:GroupElement>
 							<smartForm:GroupElement label="Name">
 								<smartField:SmartField value="{InterfaceText}" />
+								<!-- contextEditable="true" editable="true" name="interfacetext" /> -->
 							</smartForm:GroupElement>
 							<smartForm:GroupElement label="Interface Type">
 								<smartField:SmartField value="{InterfaceType}" />
@@ -256,6 +269,7 @@
 							<smartForm:GroupElement label="Extension">
 								<smartField:SmartField value="{IDocExtn}" />
 							</smartForm:GroupElement>
+
 						</smartForm:Group>
 					</smartForm:SmartForm>
 				</Panel>

@@ -6,12 +6,13 @@ sap.ui.define([
 		"sap/m/MessageBox",
 		"sap/m/MessageToast",
 		"sap/ui/model/json/JSONModel",
-		"sap/ui/model/odata/v2/ODataModel"
+		"sap/ui/model/odata/v2/ODataModel",
+		"sap/ui/core/Fragment"
 	],
-	function (Controller, Filter, FilterOperator, Sorter, MessageBox, MessageToast, JSONModel, ODataModel) {
+	function (Controller, Filter, FilterOperator, Sorter, MessageBox, MessageToast, JSONModel, ODataModel, Fragment) {
 		"use strict";
 
-		return Controller.extend("zlhsl.controller.Functions", {
+		return Controller.extend("zlhslc.controller.Functions", {
 			onInit: function () {
 				this._bDescendingSort = false;
 				this._function = null; // This is 'Function' entity and not just 'FunctionID'
@@ -19,21 +20,28 @@ sap.ui.define([
 			},
 
 			onSearch: function (oEvent) {
-				debugger;
 				var oTableSearchState = [],
 					sQuery = oEvent.getParameter("query");
 
 				if (sQuery && sQuery.length > 0) {
 					oTableSearchState = [
-						new Filter("FunctionText", FilterOperator.Contains, sQuery) ||
-						new Filter("FunctionID", FilterOperator.Contains, sQuery)
+						new Filter("FunctionID", FilterOperator.Contains, sQuery),
+						new Filter("FunctionText", FilterOperator.Contains, sQuery),
 					];
-				}
 
-				this.getView()
-					.byId("functionsTable")
-					.getBinding("items")
-					.filter(oTableSearchState, "Application");
+					this.getView()
+						.byId("functionsTable")
+						.getBinding("items")
+						.filter(new Filter({
+							filters: oTableSearchState,
+							and: false
+						}));
+
+				} else {
+					this.getView()
+						.byId("functionsTable")
+						.getBinding("items").filter([]);
+				}
 			},
 
 			onSort: function () {
@@ -47,6 +55,45 @@ sap.ui.define([
 				oBinding.sort(oSorter);
 			},
 
+			onSettingsPress: function () {
+				// creates dialog list if not yet created
+				// if (!this._oDialogs) {
+				// 	this._oDialogs = {};
+				// }
+
+				// creates requested dialog if not yet created
+				if (!this._oDialogs) {
+					Fragment.load({
+						name: "zlhslc.view.fragment.ViewSettingsDialog",
+						controller: this
+					}).then(function (oDialog) {
+						this._oDialogs = oDialog;
+						this.getView().addDependent(this._oDialogs);
+
+						// this._oDialogs.bindFilterItems("filterItems>/items",
+						// 	function (sId, oContext) {
+						// 		debugger;
+						// 		return new sap.m.ViewSettingsFilterItem({
+						// 			key: oContext.getObject().template,
+						// 			text: oContext.getObject().label,
+						// 			multiSelect: false,
+						// 			items: this.getViewSettingsItems(oContext.getObject().template, oContext.getObject().type)
+						// 		});
+						// 	}.bind(this));
+
+						// opens the dialog
+						this._oDialogs.open();
+					}.bind(this));
+				} else {
+					// opens the requested dialog
+					this._oDialogs.open();
+				}
+			},
+
+			onFilterPage: function (oEvent) {
+				debugger;
+			},
+
 			onCreate: function (oEvent) {
 				this._bCreateMode = true;
 				this._function = null;
@@ -58,7 +105,7 @@ sap.ui.define([
 				oSmartForm.setBindingContext(oDataModel.createEntry("/FunctionSet", {
 					// groupId: "newFunction",
 					refreshAfterChange: true,
-					success: function () {
+					success: function (oData) {
 						debugger;
 						this._bCreateMode = null;
 						MessageToast.show("Function created successfully.");
@@ -66,21 +113,28 @@ sap.ui.define([
 						oSmartForm.setProperty("title", "Change Function");
 						// this.toggleFooter();
 						this.getView().setBusy(false);
+					}.bind(this),
+
+					error: function (oError) {
+						MessageBox.error("Function could not be created.");
+						this.getView().setBusy(false);
+						// this._bCreateMode = null;
 					}.bind(this)
 				}));
 
-				oSmartForm.setProperty("visible", true);
+				this.getView().byId("idSFPanel").setVisible(true);
+				oSmartForm.setVisible(true);
 				oSmartForm.setEditable(true);
 				oSmartForm.setProperty("title", "Create Function");
-				this.toggleFooter();
 			},
 
 			onSelectionChange: function (oEvent) {
+				this.getView().byId("idSFPanel").setVisible(true);
 				// var oDataModel = this.getOwnerComponent().getModel();
 				var oSmartForm = this.getView().byId("idSmartForm");
 				oSmartForm.bindElement(oEvent.getSource().getSelectedContextPaths()[0]);
 				oSmartForm.getModel().setDefaultBindingMode("TwoWay");
-				oSmartForm.setProperty("visible", true);
+				oSmartForm.setVisible(true);
 				if (oSmartForm.getProperty("editable")) {
 					oSmartForm.setProperty("title", "Change Function");
 				} else {
@@ -101,11 +155,11 @@ sap.ui.define([
 						functionid: functionid
 					});
 				}.bind(this));
-				this.getView().byId("idSmartForm").bindElement("/FunctionSet('" + functionid + "')");
+				// this.getView().byId("idSmartForm").bindElement("/FunctionSet('" + functionid + "')");
 			},
 
 			onUpdateFinished: function (oEvent) {
-				var scount = oEvent.getParameter("total");
+				var count = oEvent.getParameter("total");
 				var oTitle = this.getView().byId("entityTitle");
 				oTitle.setProperty(
 					"text",
@@ -113,14 +167,16 @@ sap.ui.define([
 					.getModel("i18n")
 					.getResourceBundle()
 					.getText("title.text.Functions") +
-					" (" + scount + ")"
+					" (" + count + ")"
 				);
+				this.getView().byId("functionsTable").setBusy(false);
 			},
 
 			toggleFooter: function () {
 				this.getPage().setShowFooter(this.getView().byId("idSmartForm").getEditable());
 				// this.getPage().setShowFooter(!this.getPage().getShowFooter());
 			},
+
 			toggleAreaPriority: function () {
 				var oTitle = this.getPage().getTitle(),
 					sNewPrimaryArea = oTitle.getPrimaryArea() === DynamicPageTitleArea.Begin ? DynamicPageTitleArea.Middle : DynamicPageTitleArea.Begin;
@@ -176,13 +232,6 @@ sap.ui.define([
 				}
 			},
 
-			// onFormatError: function (oEvent) {
-			// 	debugger;
-			// },
-			// onChecked: function (oEvent) {
-			// 	debugger;
-			// },
-
 			onValidationError: function (oEvent) {
 				debugger;
 				MessageBox.error(oEvent.getParameter("message"));
@@ -199,6 +248,7 @@ sap.ui.define([
 					oSmartForm.getModel().deleteCreatedEntry(oSmartForm.getBindingContext());
 					oSmartForm.setBindingContext(null)
 					oSmartForm.setVisible(false);
+					this.getView().byId("idSFPanel").setVisible(false);
 					this._bCreateMode = false;
 				} else {
 					oSmartForm.getModel().resetChanges();
@@ -246,34 +296,134 @@ sap.ui.define([
 					function (oAction) {
 						if (oAction === 'OK') {
 							this.getView().setBusy(true);
-							this.getView().byId("idSmartForm").setProperty("visible", false);
+							this.getView().byId("idSmartForm").setVisible(false);;
+							this.getView().byId("idSFPanel").setVisible(false);
 							this.getView().getModel().remove(this._sPath, {
 								success: function () {
 									this.getView().setBusy(false);
 									MessageToast.show("Function '" + this._functionid + "' deleted succcessfully.");
+									this._sPath = null;
 								}.bind(this),
 								error: function () {
 									debugger;
 									this.getView().setBusy(false);
 									MessageToast.show("Error occured while deleting Function '" + this._functionid);
+									this._sPath = null;
 								}.bind(this),
 								refreshAfterChange: true
 							})
 
 						} else {
 							MessageToast.show("Deletion cancelled.");
+							this._sPath = null;
 						}
 					}.bind(this)
 				);
 			},
 
 			onClone: function (oEvent) {
-				//this.toggleFooter();
+				this._bCreateMode = true;
+				this._function = null;
+
+				var oSmartForm = this.byId("idSmartForm"),
+					oDataModel = this.getView().getModel(),
+					sPath = oEvent.getSource().getParent().getParent().getBindingContextPath(),
+					oData = oDataModel.getData(sPath);
+				// delete oData.ToInterfaces;
+				// delete oData.__metadata;
+
+				oData.FunctionID = oData.FunctionID + "_COPY";
+
+				oSmartForm.unbindContext();
+				oSmartForm.getModel().setDefaultBindingMode("TwoWay");
+				oSmartForm.setBindingContext(oDataModel.createEntry("/FunctionSet", {
+					refreshAfterChange: true,
+					success: function () {
+						debugger;
+						this._bCreateMode = null;
+						MessageToast.show("Function copied successfully.");
+						// this.getView().byId("idSmartForm").setEditable(false);
+						oSmartForm.setProperty("title", "Change Function");
+						// this.toggleFooter();
+						this.getView().setBusy(false);
+					}.bind(this),
+
+					error: function (oError) {
+						debugger;
+						MessageBox.error("Function could not be copied.");
+						this.getView().setBusy(false);
+						// this._bCreateMode = null;
+					}.bind(this),
+
+					properties: oData
+				}));
+
+				this.getView().byId("idSFPanel").setVisible(false);
+				oSmartForm.setVisible(true);
+				oSmartForm.setEditable(true);
+				oSmartForm.setProperty("title", "Copy Function");
 			},
 
 			getPage: function () {
 				return this.byId("dynamicPageId");
+			},
+
+			// shows selected filters
+			handleConfirm: function (oEvent) {
+				this.performSortGroup(oEvent);
+
+				this.performFilter(oEvent);
+			},
+
+			performFilter: function (oEvent) {
+				var oParams = oEvent.getParameters(),
+					oTable = this.getView().byId("functionsTable"),
+					oBinding = oTable.getBinding("items"),
+					aFilter = [];
+
+				if (oParams.filterItems) {
+					debugger;
+				}
+				oBinding.filter(aFilters);
+			},
+
+			performSortGroup: function (oEvent) {
+				var oParams = oEvent.getParameters(),
+					oTable = this.getView().byId("functionsTable"),
+					oBinding = oTable.getBinding("items"),
+					sPath,
+					aSorters = [],
+					aGroups = [];
+				aSorters.push(new Sorter(oParams.sortItem.getKey(), oParams.sortDescending, null));
+
+				if (oParams.groupItem) {
+					sPath = oParams.groupItem.getKey();
+					aGroups.push(new Sorter(sPath, oParams.groupDescending,
+						function (oContext) {
+							var name = oContext.getProperty(sPath);
+							return {
+								key: name,
+								text: name
+							};
+						}
+					));
+				}
+
+				if (aSorters) {
+					oBinding.sort(aSorters);
+				}
+				if (aGroups) {
+					oBinding.sort(aGroups);
+				}
+			},
+
+			// onExit - destroy created dialogs
+			onExit: function () {
+				if (this._oDialogs) {
+					this._oDialogs.destroy();
+				}
+				this._oDialogs = null;
 			}
+
 		});
-	}
-);
+	});

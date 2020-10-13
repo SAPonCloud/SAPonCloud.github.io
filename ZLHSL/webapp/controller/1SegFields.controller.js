@@ -31,7 +31,7 @@ sap.ui.define([
             var oModel = this.getOwnerComponent().getModel();
             this._functionid = oEvent.getParameter("arguments").functionid || this._functionid;
             this._interfaceid = oEvent.getParameter("arguments").interfaceid || this._interfaceid;
-            this.getView().setModel(oModel, "interfaces");
+
             this.getView().bindElement({
                 path: "/InterfaceSet(FunctionID='" + this._functionid + "',InterfaceID='" + this._interfaceid + "')",
                 model: "interfaces"
@@ -42,7 +42,7 @@ sap.ui.define([
                     success: function (oData) {
                         var oJSONModel = new JSONModel();
                         oJSONModel.setData(oData.results);
-                        this.getView().byId("idSegmentsTable").setModel(oJSONModel, "segments");
+                        this.getView().byId("idSegmentSection").setModel(oJSONModel, "segments");
                     }.bind(this)
                 });
 
@@ -51,7 +51,7 @@ sap.ui.define([
                     success: function (oData) {
                         var oJSONModel = new JSONModel();
                         oJSONModel.setData(oData.results);
-                        this.getView().byId("idFieldsTable").setModel(oJSONModel, "fields");
+                        this.getView().byId("idFieldSection").setModel(oJSONModel, "fields");
                     }.bind(this)
                 });
         },

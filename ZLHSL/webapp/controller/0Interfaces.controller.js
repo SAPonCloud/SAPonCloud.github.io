@@ -1,23 +1,17 @@
 sap.ui.define([
     "sap/ui/core/mvc/Controller",
-    "sap/ui/model/Filter",
-    "sap/ui/model/FilterOperator",
-    "sap/ui/model/Sorter",
+    "sap/ui/model/json/JSONModel",
     "sap/f/library",
     "sap/m/MessageBox",
-    "sap/m/MessageToast",
-    "zlhslc/model/formatter"
+    "sap/m/MessageToast"
   ],
-  function (Controller, Filter, FilterOperator, Sorter, library, MessageBox, MessageToast, formatter) {
+  function (Controller, JSONModel, library, MessageBox, MessageToast) {
     "use strict";
 
     // shortcut for sap.f.DynamicPageTitleArea
     var DynamicPageTitleArea = library.DynamicPageTitleArea;
 
     return Controller.extend("zlhslc.controller.Interfaces", {
-
-      formatter: formatter,
-
       onInit: function () {
         var oExitButton = this.getView().byId("exitFullScreenBtn"),
           oEnterButton = this.getView().byId("enterFullScreenBtn");
@@ -41,7 +35,7 @@ sap.ui.define([
           });
         }, this);
       },
-
+      
       onListItemPress: function (oEvent) {
         var interfaceid = oEvent.getSource().getCells()[0].getProperty("title"),
           oNextUIState;
@@ -55,51 +49,15 @@ sap.ui.define([
         }.bind(this));
       },
 
-      onSearch: function (oEvent) {
-        var oTableSearchState = [],
-          sQuery = oEvent.getParameter("query");
-
-        if (sQuery && sQuery.length > 0) {
-          oTableSearchState = [
-            new Filter("InterfaceID", FilterOperator.Contains, sQuery),
-            new Filter("InterfaceText", FilterOperator.Contains, sQuery),
-          ];
-
-
-          this.getView()
-            .byId("idInterfaceTable")
-            .getBinding("items")
-            .filter(new Filter({
-              filters: oTableSearchState,
-              and: false
-            }));
-        } else {
-          this.getView()
-            .byId("idInterfaceTable")
-            .getBinding("items").filter([]);
-        }
-      },
-
-      onSort: function () {
-        this._bDescendingSort = !this._bDescendingSort;
-        var oView = this.getView(),
-          oTable = oView.byId("idInterfaceTable"),
-          oBinding = oTable.getBinding("items"),
-          oSorter = new Sorter("InterfaceID", this._bDescendingSort);
-
-        oBinding.sort(oSorter);
-      },
-
       onSelectionChange: function (oEvent) {
         var interfaceid = oEvent.getSource().getSelectedItem().getCells()[0].getProperty("title"),
           sPath = "/InterfaceSet(FunctionID='" + this._functionid + "',InterfaceID='" + interfaceid + "')";
 
-        this.getView().byId("idSFPanel").setVisible(true);
-
+        debugger;
         var oSmartForm = this.getView().byId("idInterfaceSmartForm");
         oSmartForm.bindElement(sPath);
         oSmartForm.getModel().setDefaultBindingMode("TwoWay");
-        oSmartForm.setVisible(true);
+        oSmartForm.setProperty("visible", true);
         if (oSmartForm.getProperty("editable")) {
           oSmartForm.setProperty("title", "Change Interface");
         } else {
@@ -114,7 +72,7 @@ sap.ui.define([
         if (this._interface !==
           this.getView().byId("idInterfaceSmartForm").getModel().getData(
             this.getView().byId("idInterfaceSmartForm").getBindingContext().getPath())) {
-          MessageBox.confirm("Interface has changed. Discard Changes?",
+          MessageBox.confirm("Function has changed. Discard Changes?",
             function (oAction) {
               if (oAction === 'OK') {
                 this.getView().byId("idInterfaceSmartForm").getModel().resetChanges();
@@ -128,68 +86,47 @@ sap.ui.define([
       onEditToggled: function (oEvent) {
         var bEditable = oEvent.getParameter("editable");
 
-        if (this._interface !== null && bEditable === false) {
+        if (this._function !== null && bEditable === false) {
           this._checkDataChanged();
         }
 
         if (bEditable) {
-          this.getView().byId("idInterfaceSmartForm").setProperty("title", "Change Interface");
+          this.getView().byId("idInterfaceSmartForm").setProperty("title", "Change Function");
         } else {
-          this.getView().byId("idInterfaceSmartForm").setProperty("title", "Interface");
+          this.getView().byId("idInterfaceSmartForm").setProperty("title", "Function");
         }
 
         this.toggleFooter();
       },
 
       _onFunctionMatched: function (oEvent) {
+        var oModel = this.getOwnerComponent().getModel();
+        this.getView().setModel(oModel, "functions");
         this._functionid = oEvent.getParameter("arguments").functionid || this._functionid || "0";
-        this.getView().bindElement("/FunctionSet('" + this._functionid + "')", {
-          expand: 'ToInterfaces'
+        this.getView().bindElement({
+          path: "/FunctionSet('" + this._functionid + "')",
+          model: "functions"
         });
 
-        var oInterfaceSmartForm = this.byId("idInterfaceSmartForm");
-
-        // if (this._functionidtmp !== null && this._functionidtmp !== this._functionid) {
-        //   if (oInterfaceSmartForm.getEditable()) {
-        //     if (this._bCreateMode) {
-        //       oInterfaceSmartForm.getModel().deleteCreatedEntry(oInterfaceSmartForm.getBindingContext());
-        //       oInterfaceSmartForm.setBindingContext(null);
-        //       this._bCreateMode = false;
-        //     }
-        //     oInterfaceSmartForm.getModel().resetChanges();
-        //     MessageToast.show("Interface editing was cancelled.");
-        //   }
-        //   oInterfaceSmartForm.setVisible(false);
-        //   oInterfaceSmartForm.setEditable(false);
-        // }
-
-        this._functionidtmp = this._functionid;
-        oInterfaceSmartForm.bindElement("/FunctionSet('" + this._functionid + "')" + "/ToInterfaces");
+        oModel.read("/FunctionSet('" + this._functionid + "')" + "/ToInterfaces", {
+          success: function (oData) {
+            debugger;
+            var oJSONModel = new JSONModel();
+            oJSONModel.setData(oData.results);
+            this.getView().byId("idInterfaceTable").setModel(oJSONModel, "interfaces");
+          }.bind(this)
+        });
       },
 
       onDelete: function (oEvent) {
-        this._interfaceid = oEvent.getSource().getParent().getParent().getAggregation("cells")[0].getProperty("title");
-        this._sPath = oEvent.getSource().getParent().getParent().getBindingContextPath();
-        MessageBox.confirm("It will delete Interface '" +
-          this._interfaceid +
+        debugger;
+        this._functionid = oEvent.getSource().getParent().getParent().getAggregation("cells")[0].getProperty("title");
+        MessageBox.confirm("It will delete interface '" +
+          this._functionid +
           "' and all its related configurations permanently. Proceed?",
           function (oAction) {
             if (oAction === 'OK') {
-              this.getView().setBusy(true);
-              this.getView().byId("idInterfaceSmartForm").setVisible(false);
-              this.getView().byId("idSFPanel").setVisible(false);
-              this.getView().getModel().remove(this._sPath, {
-                refreshAfterChange: true,
-                success: function () {
-                  this.getView().setBusy(false);
-                  MessageToast.show("Interface '" + this._interfaceid + "' deleted succcessfully.");
-                }.bind(this),
-                error: function () {
-                  this.getView().setBusy(false);
-                  MessageToast.show("Error occured while deleting Interface '" + this._interfaceid);
-                }.bind(this)
-              });
-              this.getView().byId("idInterfaceSmartForm").setEditable(false);
+              MessageToast.show("Interface '" + this._functionid + "' deleted succcessfully.");
             } else {
               MessageToast.show("Deletion cancelled.");
             }
@@ -200,81 +137,38 @@ sap.ui.define([
       onCreate: function (oEvent) {
         this._bCreateMode = true;
         this._interface = null;
+
         var oSmartForm = this.byId("idInterfaceSmartForm"),
           oDataModel = this.getView().getModel();
         oSmartForm.unbindContext();
         oSmartForm.getModel().setDefaultBindingMode("TwoWay");
-        oSmartForm.setBindingContext(oDataModel.createEntry("/InterfaceSet", {
+        oSmartForm.setBindingContext(oDataModel.createEntry("/FunctionSet('" + this._functionid + "')/InterfaceSet", {
+          // groupId: "newFunction",
           refreshAfterChange: true,
-          properties: {
-            FunctionID: this._functionid
-          },
           success: function () {
+            debugger;
             this._bCreateMode = null;
             MessageToast.show("Interface created successfully.");
             // this.getView().byId("idInterfaceSmartForm").setEditable(false);
             oSmartForm.setProperty("title", "Change Interface");
+            // this.toggleFooter();
             this.getView().setBusy(false);
-          }.bind(this),
-          error: function () {
-            MessageBox.error("Interface could not be created.");
-            this.getView().setBusy(false);
-            this._bCreateMode = null;
           }.bind(this)
         }));
-        this.getView().byId("idSFPanel").setVisible(true);
-        oSmartForm.setVisible(true);
+
+        oSmartForm.setProperty("visible", true);
         oSmartForm.setEditable(true);
         oSmartForm.setProperty("title", "Create Function");
-      },
-
-      onClone: function (oEvent) {
-        this._bCreateMode = true;
-        this._interface = null;
-
-        var oSmartForm = this.byId("idInterfaceSmartForm"),
-          oDataModel = this.getView().getModel(),
-          sPath = oEvent.getSource().getParent().getParent().getBindingContextPath(),
-          oData = oDataModel.getData(sPath);
-
-        delete oData.ToSegments;
-        delete oData.ToFields;
-        delete oData.__metadata;
-        oData.InterfaceID = oData.InterfaceID + "_COPY";
-
-        oSmartForm.unbindContext();
-        oSmartForm.getModel().setDefaultBindingMode("TwoWay");
-        oSmartForm.setBindingContext(oDataModel.createEntry("/InterfaceSet", {
-          refreshAfterChange: true,
-          properties: oData,
-          success: function () {
-            this._bCreateMode = null;
-            MessageToast.show("Interface copied successfully.");
-            oSmartForm.setProperty("title", "Change Interface");
-            this.getView().setBusy(false);
-          }.bind(this),
-          error: function () {
-            MessageBox.error("Interface could not be copied.");
-            this.getView().setBusy(false);
-            this.getView().setVisible(false);
-            this._bCreateMode = null;
-          }.bind(this)
-        }));
-
-        this.getView().byId("idSFPanel").setVisible(true);
-        oSmartForm.setVisible(true);
-        oSmartForm.setEditable(true);
-        oSmartForm.setProperty("title", "Copy Function");
-
+        this.toggleFooter();
       },
 
       onSave: function (oEvent) {
         var oSmartForm = this.getView().byId("idInterfaceSmartForm");
-
+        debugger;
         if (!this._bCreateMode) {
           var oDataModel = oSmartForm.getModel(),
             sBindingPath = oSmartForm.getBindingContext().getPath();
-          if (this._interface !== oDataModel.getData(sBindingPath)) {
+          if (this._function !== oDataModel.getData(sBindingPath)) {
             var oData = oDataModel.getObject(sBindingPath);
             delete oData.ToSegments;
             delete oData.ToFields;
@@ -282,6 +176,7 @@ sap.ui.define([
             oDataModel.update(sBindingPath,
               oData, {
                 success: function (oData) {
+                  debugger;
                   this.getView().byId("idInterfaceSmartForm").setEditable(false);
                   this.toggleFooter();
                   MessageToast.show("Interface updated successfully.")
@@ -297,9 +192,11 @@ sap.ui.define([
           }
         } else {
           this.getView().setBusy(true);
+          debugger;
           this.getView().byId("idInterfaceSmartForm").getModel().submitChanges({
             // groupId: "newFunction",
             success: function (oData) {
+              debugger;
               this.getView().setBusy(false);
               this.getView().byId("idInterfaceSmartForm").setEditable(false);
               // this.toggleFooter();
@@ -308,7 +205,8 @@ sap.ui.define([
               this._bCreateMode = null;
             }.bind(this),
             error: function (oError) {
-              MessageBox.error("Interface could not be created.");
+              debugger;
+              MessageBox.error("Function could not be created.");
               this.getView().setBusy(false);
               this._bCreateMode = null;
               // this.getView().byId("idInterfaceSmartForm").setProperty("visible", false);
@@ -321,17 +219,14 @@ sap.ui.define([
       onCancel: function (oEvent) {
         var oSmartForm = this.getView().byId("idInterfaceSmartForm");
         if (this._bCreateMode) {
-          this.getView().byId("idSFPanel").setVisible(false);
           oSmartForm.getModel().deleteCreatedEntry(oSmartForm.getBindingContext());
-          oSmartForm.setBindingContext(null);
+          oSmartForm.setBindingContext(null)
           oSmartForm.setVisible(false);
           this._bCreateMode = false;
         } else {
           oSmartForm.getModel().resetChanges();
         }
         oSmartForm.setEditable(false);
-        oSmartForm.setVisible(false);
-        this.getView().byId("idSFPanel").setVisible(false);
         this.toggleFooter();
       },
 
@@ -381,29 +276,6 @@ sap.ui.define([
         this.oRouter.navTo("master", {
           layout: sNextLayout
         });
-      },
-      onUpdateFinished: function (oEvent) {
-        var count = oEvent.getParameter("total");
-        var oScrollContainer = this.getView().byId("idScrollContainer"),
-          oTitle = this.getView().byId("idTabTitle");
-        oTitle.setProperty("text", "Interfaces (" + count + ")");
-        switch (count) {
-          case 0:
-            oScrollContainer.setProperty("height", "100px");
-            break;
-          case 1:
-            oScrollContainer.setProperty("height", "100px");
-            break;
-          case 2:
-            oScrollContainer.setProperty("height", "150px");
-            break;
-          case 3:
-            oScrollContainer.setProperty("height", "170px");
-            break;
-          default:
-            oScrollContainer.setProperty("height", "215px");
-            break;
-        }
       }
     });
   });

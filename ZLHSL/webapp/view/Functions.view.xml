@@ -1,4 +1,4 @@
-<mvc:View controllerName="zlhsl.controller.Functions"
+<mvc:View controllerName="zlhslc.controller.Functions"
 	xmlns="sap.m"
 	xmlns:f="sap.f"
 	xmlns:smartForm="sap.ui.comp.smartform"
@@ -22,36 +22,37 @@
 
 		<!-- DynamicPage Content -->
 		<f:content>
-			<VBox fitContainer="false" >
-				<OverflowToolbar class="sapFDynamicPageAlignContent" >
+			<VBox fitContainer="false">
+				<OverflowToolbar class="sapFDynamicPageAlignContent">
+					<Button type="Default"
+						text="New Function"
+						icon="sap-icon://create"
+						press=".onCreate" />
 					<ToolbarSpacer />
 					<SearchField search=".onSearch"
-						width="17.5rem" />
-					<OverflowToolbarButton icon="sap-icon://sort"
-						text="Sort"
+						width="17.5rem" placeholder="Search Function"/>
+					<!-- <OverflowToolbarButton icon="sap-icon://sort" text="Sort" tooltip="Sort Functions" type="Transparent" press=".onSort" />
+					<OverflowToolbarButton icon="sap-icon://filter" text="Filter" type="Transparent" press=".onFilter" /> -->
+					<OverflowToolbarButton icon="sap-icon://action-settings"
+						text="Settings"
+						tooltip="View Settings"
 						type="Transparent"
-						press=".onSort" />
-					<OverflowToolbarButton icon="sap-icon://filter"
-						text="Filter"
-						type="Transparent"
-						press=".onFilter" />
-					<OverflowToolbarButton icon="sap-icon://add"
-						text="Create"
-						type="Transparent"
-						press=".onCreate" />
+						press=".onSettingsPress" />
 				</OverflowToolbar>
 				<ScrollContainer height="240px"
-					horizontal="false" 
-					vertical="true"
-					 >
-					<Table id="functionsTable" 
+					class="sapUiSmallMarginBottom"
+					horizontal="false"
+					vertical="true">
+					<Table id="functionsTable"
+						enableBusyIndicator="true"
 						mode="SingleSelectLeft"
 						selectionChange=".onSelectionChange"
-						inset="false"
+						inset="false" 
 						items="{
 							path: '/FunctionSet',
 							parameters: {
-								expand: 'ToInterfaces'
+								expand: 'ToInterfaces',
+								operationMode: 'Client'
 							},
 							sorter: {
 								path: 'FunctionID'
@@ -59,13 +60,14 @@
 						}"
 						growingScrollToLoad="true"
 						growing="true"
-						class="sapUiSizeCompact sapFDynamicPageAlignContent sapUiTinyMargin"
+						class="sapUiSizeCompact sapFDynamicPageAlignContent sapUiTinyMarginBegin"
 						width="auto"
 						alternateRowColors="true"
 						sticky="ColumnHeaders"
 						updateFinished=".onUpdateFinished">
 						<columns>
-							<Column width="12em" class="sapUiTinyMargin">
+							<Column width="12em" 
+								class="sapUiTinyMargin">
 								<Text text="Function ID" />
 							</Column>
 							<Column minScreenWidth="Desktop"
@@ -83,7 +85,9 @@
 								popinDisplay="Inline">
 								<Text text="Partner Type" />
 							</Column>
-							<Column >
+							<Column minScreenWidth="Tablet"
+								demandPopin="true"
+								popinDisplay="WithoutHeader">
 								<Text text="Active" />
 							</Column>
 							<Column minScreenWidth="Tablet">
@@ -92,7 +96,7 @@
 						</columns>
 						<items>
 							<ColumnListItem type="Navigation"
-								press=".onListItemPress">
+								press=".onListItemPress" >
 								<cells>
 									<ObjectIdentifier title="{FunctionID}" />
 									<Text text="{FunctionText}" />
@@ -124,45 +128,57 @@
 						</items>
 					</Table>
 				</ScrollContainer>
-				<smartForm:SmartForm id="idSmartForm"
-					editTogglable="true"
-					class="editableForm"
-					editable="false"
-					editToggled=".onEditToggled" formatError=".onFormatError" parseError=".onFormatError"
-					visible="false" checked=".onFormatError"
-					validationError=".onValidationError"
-					validationSuccess=".onValidationSuccess">
-					<!-- <smartForm:layout>
+				<!-- <VBox backgroundDesign="Translucent"> -->
+				<Panel id="idSFPanel" 
+					backgroundDesign="Solid"
+					class="sapUiSmallMarginTop"
+					visible="false">
+					<smartForm:SmartForm id="idSmartForm"
+						editTogglable="true"
+						class="editableForm"
+						editable="false"
+						checkButton="true"
+						editToggled=".onEditToggled"
+						formatError=".onFormatError"
+						parseError=".onFormatError"
+						visible="false"
+						checked=".onFormatError"
+						validationError=".onValidationError"
+						validationSuccess=".onValidationSuccess">
+						<!-- <smartForm:layout>
 						<smartForm:ColumnLayout columnsM="2" columnsL="3" columnsXL="4"/>
-					</smartForm:layout> -->
+						</smartForm:layout> -->
 
-					<smartForm:Group id="idSFGroup">
-						<smartForm:GroupElement label="Function">
-							<smartField:SmartField value="{FunctionID}" />
-						</smartForm:GroupElement>
-						<smartForm:GroupElement label="Function Name">
-							<smartField:SmartField value="{FunctionText}" />
-						</smartForm:GroupElement>
-						<smartForm:GroupElement label="Partner">
-							<smartField:SmartField value="{Partner}" />
-						</smartForm:GroupElement>
-						<smartForm:GroupElement label="Partner Type">
-							<smartField:SmartField value="{PartnerType}" />
-						</smartForm:GroupElement>
-						<smartForm:GroupElement label="Active">
-							<smartField:SmartField value="{Active}">
-								<smartField:configuration>
-									<smartField:Configuration controlType="checkBox" />
-								</smartField:configuration>
-							</smartField:SmartField>
-							<!-- <Switch id="idSwitch" state="{Active}" customTextOn="Yes" customTextOff="No" enabled="false">
+						<smartForm:Group id="idSFGroup1">
+							<smartForm:GroupElement label="Function">
+								<smartField:SmartField value="{FunctionID}" />
+							</smartForm:GroupElement>
+							<smartForm:GroupElement label="Function Name">
+								<smartField:SmartField value="{FunctionText}" />
+							</smartForm:GroupElement>
+							<smartForm:GroupElement label="Active">
+								<smartField:SmartField value="{Active}">
+									<smartField:configuration>
+										<smartField:Configuration controlType="checkBox" />
+									</smartField:configuration>
+								</smartField:SmartField>
+								<!-- <Switch id="idSwitch" state="{Active}" customTextOn="Yes" customTextOff="No" enabled="false">
 								<layoutData>
 									<FlexItemData growFactor="0" />
 								</layoutData>
 							</Switch> -->
-						</smartForm:GroupElement>
-					</smartForm:Group>
-				</smartForm:SmartForm>
+							</smartForm:GroupElement>
+						</smartForm:Group>
+						<smartForm:Group id="idSFGroup2">
+							<smartForm:GroupElement label="Partner">
+								<smartField:SmartField value="{Partner}" />
+							</smartForm:GroupElement>
+							<smartForm:GroupElement label="Partner Type">
+								<smartField:SmartField value="{PartnerType}" />
+							</smartForm:GroupElement>
+						</smartForm:Group>
+					</smartForm:SmartForm>
+				</Panel>
 			</VBox>
 		</f:content>
 		<!-- DynamicPage Footer -->

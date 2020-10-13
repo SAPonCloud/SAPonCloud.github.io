@@ -1,47 +1,44 @@
 <mvc:View displayBlock="true"
-    controllerName="zlhsl.controller.SegFields"
+    controllerName="zlhslc.controller.SegFields"
     xmlns:mvc="sap.ui.core.mvc"
     xmlns="sap.m"
     xmlns:uxap="sap.uxap"
     xmlns:f="sap.f"
     xmlns:layout="sap.ui.layout"
+    xmlns:smartForm="sap.ui.comp.smartform"
+    xmlns:smartField="sap.ui.comp.smartfield"
     height="100%">
 
     <uxap:ObjectPageLayout id="ObjectPageLayout"
         enableLazyLoading="true"
-        useIconTabBar="true"
         showTitleInHeaderContent="true"
         toggleHeaderOnTitleClick="{/titleClickable}"
         showHeaderContent="true">
         <uxap:headerTitle>
             <uxap:ObjectPageDynamicHeaderTitle backgroundDesign="Transparent">
                 <uxap:expandedHeading>
-                    <Title text="{interfaces>InterfaceID}"
+                    <Title text="{InterfaceID}"
                         wrapping="true" />
                 </uxap:expandedHeading>
                 <uxap:snappedHeading>
-                    <Title text="{interfaces>InterfaceID}"
+                    <Title text="{InterfaceID}"
                         wrapping="true" />
                 </uxap:snappedHeading>
                 <!-- <uxap:expandedHeading>
-                    <Title text="{interfaces>InterfaceID}" wrapping="true" />
+                    <Title text="{InterfaceID}" wrapping="true" />
                 </uxap:expandedHeading> -->
                 <uxap:expandedContent >
-                    <Label text="{interfaces>InterfaceText}"
+                    <Label text="{InterfaceText}"
                         design="Bold" />
                 </uxap:expandedContent>
                 <uxap:snappedContent>
-                    <Label text="{interfaces>InterfaceText}"
+                    <Label text="{InterfaceText}"
                         design="Bold" />
                 </uxap:snappedContent>
                 <uxap:snappedTitleOnMobile>
-                    <Title text="{interfaces>InterfaceText}" />
+                    <Title text="{InterfaceText}" />
                 </uxap:snappedTitleOnMobile>
 
-                <!-- <uxap:actions>
-                    <OverflowToolbarButton icon="sap-icon://pull-down" text="show section" type="Emphasized" tooltip="pull-down" />
-                    <OverflowToolbarButton icon="sap-icon://show" text="show state" type="Emphasized" tooltip="show" />
-                </uxap:actions> -->
                 <uxap:navigationActions>
                     <OverflowToolbarButton type="Transparent"
                         icon="sap-icon://full-screen"
@@ -69,54 +66,64 @@
             <FlexBox wrap="Wrap"
                 fitContainer="true">
                 <layout:HorizontalLayout allowWrapping="true">
-                    <layout:VerticalLayout class="sapUiMediumMarginEnd"
-                        width="10em">
+                    <layout:VerticalLayout class="sapUiMediumMarginEnd sapUiTinyMarginBottom"
+                        visible="{= ${InterfaceType} !== '' }">
                         <ObjectAttribute title="Interface Type" />
-                        <ObjectStatus text="{interfaces>InterfaceType}"
+                        <ObjectStatus text="{InterfaceType}"
                             state="Information" />
                     </layout:VerticalLayout>
-                    <layout:VerticalLayout class="sapUiMediumMarginEnd">
+                    <layout:VerticalLayout class="sapUiMediumMarginEnd sapUiTinyMarginBottom"
+                        visible="{= ${Direction} !== '' }">
                         <ObjectAttribute title="Direction" />
-                        <ObjectStatus text="{interfaces>Direction}"
-                            state="Information" />
+                        <ObjectStatus icon="{path: 'Direction', 
+									formatter: '.formatter.directionIcon'}"
+                            text="{path: 'Direction', 
+									formatter: '.formatter.directionText'}"
+                            state="{path: 'Direction', 
+									formatter: '.formatter.directionState'}" />
                     </layout:VerticalLayout>
-                    <layout:VerticalLayout class="sapUiMediumMarginEnd">
+                    <layout:VerticalLayout class="sapUiMediumMarginEnd sapUiTinyMarginBottom"
+                        visible="{= ${MessageType} !== '' }">
                         <ObjectAttribute title="Message Type" />
-                        <ObjectStatus text="{interfaces>MessageType}"
+                        <ObjectStatus text="{MessageType}"
                             state="Information" />
                     </layout:VerticalLayout>
-                    <layout:VerticalLayout class="sapUiMediumMarginEnd">
+                    <layout:VerticalLayout class="sapUiMediumMarginEnd sapUiTinyMarginBottom"
+                        visible="{= ${MessageCode} !== '' }">
                         <ObjectAttribute title="Message Code" />
-                        <ObjectStatus text="{interfaces>MessageCode}"
+                        <ObjectStatus text="{MessageCode}"
                             state="Information" />
                     </layout:VerticalLayout>
-                    <layout:VerticalLayout class="sapUiMediumMarginEnd">
+                    <layout:VerticalLayout class="sapUiMediumMarginEnd sapUiTinyMarginBottom"
+                        visible="{= ${MessageFunc} !== '' }">
                         <ObjectAttribute title="Message Function" />
-                        <ObjectStatus text="{interfaces>MessageFunc}"
+                        <ObjectStatus text="{MessageFunc}"
                             state="Information" />
                     </layout:VerticalLayout>
-                    <layout:VerticalLayout class="sapUiMediumMarginEnd">
-                        <ObjectAttribute title="Idoc Type" />
-                        <ObjectStatus text="{interfaces>IdocType}"
+                    <layout:VerticalLayout class="sapUiMediumMarginEnd sapUiTinyMarginBottom"
+                        visible="{= ${IDocType} !== '' }">
+                        <ObjectAttribute title="Basic Type" />
+                        <ObjectStatus text="{IDocType}"
                             state="Information" />
                     </layout:VerticalLayout>
-                    <layout:VerticalLayout class="sapUiMediumMarginEnd">
+                    <layout:VerticalLayout class="sapUiMediumMarginEnd sapUiTinyMarginBottom"
+                        visible="{= ${IDocExtn} !== '' }">
                         <ObjectAttribute title="Extension" />
-                        <ObjectStatus text="{interfaces>IdocExtn}"
+                        <ObjectStatus text="{IDocExtn}"
                             state="Information" />
                     </layout:VerticalLayout>
                     <layout:VerticalLayout class="sapUiMediumMarginEnd">
-						<ObjectAttribute title="Active" />
-						<Switch state="{interfaces>InterfaceActive}"
-							customTextOn="Yes"
-							customTextOff="No"
-							enabled="false">
-							<layoutData>
-								<FlexItemData backgroundDesign="Transparent"
-									growFactor="1" />
-							</layoutData>
-						</Switch>
-					</layout:VerticalLayout>
+                        <ObjectAttribute title="Active" />
+                        <Switch state="{InterfaceActive}"
+                            customTextOn="Yes"
+                            customTextOff="No"
+                            enabled="false">
+                            <layoutData>
+                                <FlexItemData backgroundDesign="Transparent"
+                                    growFactor="1" />
+                            </layoutData>
+                        </Switch>
+                    </layout:VerticalLayout>
                 </layout:HorizontalLayout>
             </FlexBox>
         </uxap:headerContent>
@@ -127,26 +134,30 @@
                 title="Segments">
                 <uxap:subSections>
                     <uxap:ObjectPageSubSection id="idSegmentList"
-                        title="Segments({segments>/length})">
-                        <VBox fitContainer="false">
+                        title="Segments">
+                        <VBox fitContainer="false" >
                             <OverflowToolbar class="sapFDynamicPageAlignContent">
                                 <ToolbarSpacer />
-                                <SearchField search=".onSearch"
+                                <SearchField search=".onSearchSegments"
                                     width="17.5rem" />
                                 <OverflowToolbarButton icon="sap-icon://sort"
                                     text="Sort"
+                                    tooltip="Sort Segment"
                                     type="Transparent"
-                                    press=".onSort" />
-                                <OverflowToolbarButton icon="sap-icon://filter"
-                                    text="Filter"
-                                    type="Transparent"
-                                    press=".onFilter" />
-                                <OverflowToolbarButton icon="sap-icon://add"
+                                    press=".onSortSegments" />
+                                <Button type="Default"
+						            text="New Segment"
+						            icon="sap-icon://create"
+                                    tooltip="Create Segment"
+						            press=".onCreateSegment" />
+                                <!-- <OverflowToolbarButton icon="sap-icon://filter" text="Filter" type="Transparent" press=".onFilter" /> -->
+                                <!-- <OverflowToolbarButton icon="sap-icon://add"
                                     text="Create"
+                                    tooltip="Create Segment"
                                     type="Transparent"
-                                    press=".onCreate" />
+                                    press=".onCreateSegment" /> -->
                             </OverflowToolbar>
-                            <ScrollContainer height="240px"
+                            <ScrollContainer id="idScrollContainerSeg"
                                 horizontal="false"
                                 vertical="true">
                                 <Table id="idSegmentsTable"
@@ -154,15 +165,15 @@
                                     inset="false"
                                     class="sapFDynamicPageAlignContent"
                                     width="auto"
-                                    items="{segments>/}"
-                                    selectionChange=".onSelectSegment">
-                                    <!-- <headerToolbar>
-                                <Toolbar>
-                                    <Title text="Segments({segments>/length})" level="H2" />
-                                </Toolbar>
-                            </headerToolbar> -->
+                                    items="{
+                                        path: 'ToSegments',
+							            sorter: {
+								            path: 'SegmentName'
+							            } 
+                                    }"
+                                    updateFinished="onSegUpdateFinished">
                                     <columns>
-                                        <Column >
+                                        <Column width="250px">
                                             <Text text="Segment" />
                                         </Column>
                                         <Column minScreenWidth="Tablet"
@@ -174,123 +185,283 @@
                                             demandPopin="false">
                                             <Text text="Parent Segment" />
                                         </Column>
-                                        <Column minScreenWidth="Tablet">
+                                        <Column minScreenWidth="Desktop">
                                             <Text text="Parent Field" />
+                                        </Column>
+                                        <Column minScreenWidth="Tablet">
+                                            <Text text="Action" />
                                         </Column>
                                     </columns>
                                     <items>
                                         <ColumnListItem type="Active"
-                                            press="onSelectSegment">
+                                            press="onSelectSegment" selected="true">
                                             <cells>
-                                                <ObjectIdentifier title="{segments>SegmentName}" />
-                                                <Text text="{segments>SegmentLevel}" />
-                                                <Text text="{segments>ParentSegment}" />
-                                                <Text text="{segments>ParentFieldName}" />
+                                                <ObjectIdentifier title="{SegmentName}" />
+                                                <Text text="{SegmentLevel}" />
+                                                <Text text="{ParentSegment}" />
+                                                <Text text="{ParentFieldName}" />
+                                                <OverflowToolbar class="sapFDynamicPageAlignContent"
+                                                    style="Clear">
+                                                    <OverflowToolbarButton icon="sap-icon://duplicate"
+                                                        text="Clone"
+                                                        type="Transparent"
+                                                        press=".onCloneSegment" />
+                                                    <OverflowToolbarButton icon="sap-icon://delete"
+                                                        text="Delete"
+                                                        type="Transparent"
+                                                        press=".onDeleteSegment" />
+                                                </OverflowToolbar>
                                             </cells>
                                         </ColumnListItem>
                                     </items>
                                 </Table>
                             </ScrollContainer>
+
+                            <smartForm:SmartForm id="idSegmentSmartForm"
+                                editTogglable="true"
+                                class="editableForm sapUiMediumMarginBottom"
+                                editable="false"
+                                entityType="ZLHSL_TIMCONFIG_SRV.IDocSegment"
+                                editToggled=".onEditToggledSeg"
+                                visible="false"
+                                checked=".onChecked"
+                                validationError=".onValidationError"
+                                validationSuccess=".onValidationSuccess">
+
+                                <smartForm:Group id="idSegSFGroup1">
+                                    <smartForm:GroupElement label="Segment">
+                                        <smartField:SmartField value="{SegmentName}" />
+                                    </smartForm:GroupElement>
+                                    <smartForm:GroupElement label="Segment Level">
+                                        <smartField:SmartField value="{SegmentLevel}" />
+                                    </smartForm:GroupElement>
+                                </smartForm:Group>
+                                <smartForm:Group id="idSegSFGroup2">
+                                    <smartForm:GroupElement label="Parent Segment">
+                                        <smartField:SmartField value="{ParentSegment}" />
+                                    </smartForm:GroupElement>
+                                    <smartForm:GroupElement label="Parent Field">
+                                        <smartField:SmartField value="{ParentFieldName}" />
+                                    </smartForm:GroupElement>
+                                </smartForm:Group>
+                            </smartForm:SmartForm>
+                            <Toolbar width="100%" height="3px" design="Solid"/>
                         </VBox>
                     </uxap:ObjectPageSubSection>
                 </uxap:subSections>
             </uxap:ObjectPageSection>
+
             <uxap:ObjectPageSection titleUppercase="false"
                 id="idFieldSection"
                 title="Fields">
                 <uxap:subSections>
                     <uxap:ObjectPageSubSection id="idFieldList"
-                        title="Fields({fields>/length})"
+                        title="Fields"
                         titleUppercase="false">
                         <VBox>
-                            <Table id="idFieldsTable"
-                                sticky="ColumnHeaders"
-                                inset="false"
-                                class="sapFDynamicPageAlignContent"
-                                width="auto"
-                                items="{fields>/}">
-                                <!-- <headerToolbar>
-                                    <Toolbar>
-                                        <Title text="Fields({fields>/length})" level="H2" />
-                                    </Toolbar>
-                                </headerToolbar> -->
-                                <columns>
-                                    <Column >
-                                        <Text text="Segment" />
-                                    </Column>
-                                    <Column >
-                                        <Text text="Field" />
-                                    </Column>
-                                    <Column minScreenWidth="Desktop"
-                                        demandPopin="false">
-                                        <Text text="Counter" />
-                                    </Column>
-                                    <Column minScreenWidth="Desktop"
-                                        demandPopin="false">
-                                        <Text text="Column Number" />
-                                    </Column>
-                                    <Column minScreenWidth="Tablet"
-                                        demandPopin="false">
-                                        <Text text="Screen Field" />
-                                    </Column>
-                                    <Column minScreenWidth="Tablet"
-                                        demandPopin="false">
-                                        <Text text="Reference Table" />
-                                    </Column>
-                                    <Column minScreenWidth="Tablet"
-                                        demandPopin="false">
-                                        <Text text="Reference Field" />
-                                    </Column>
-                                    <Column minScreenWidth="Tablet"
-                                        demandPopin="false">
-                                        <Text text="Field Format" />
-                                    </Column>
-                                    <Column minScreenWidth="Tablet"
-                                        demandPopin="false">
-                                        <Text text="Field Offset" />
-                                    </Column>
-                                    <Column minScreenWidth="Tablet"
-                                        demandPopin="false">
-                                        <Text text="Field Length" />
-                                    </Column>
-                                    <Column minScreenWidth="Desktop"
-                                        demandPopin="false">
-                                        <Text text="Segment Field" />
-                                    </Column>
-                                    <Column minScreenWidth="Desktop"
-                                        demandPopin="false">
-                                        <Text text="Field Value" />
-                                    </Column>
-                                </columns>
-                                <items>
-                                    <ColumnListItem type="Active">
-                                        <cells>
-                                            <ObjectIdentifier title="{fields>Segment}" />
-                                            <ObjectIdentifier title="{fields>Field}" />
-                                            <Text text="{fields>FieldName}" />
-                                            <Text text="{fields>Counter}" />
-                                            <Text text="{fields>ColumnNo}" />
-                                            <Text text="{fields>ScreenSelection}" />
-                                            <Text text="{fields>ReferenceTable}" />
-                                            <Text text="{fields>ReferenceField}" />
-                                            <Text text="{fields>FieldLabel}" />
-                                            <Text text="{fields>FieldFormat}" />
-                                            <Text text="{fields>FieldOffset}" />
-                                            <Text text="{fields>FieldLength}" />
-                                            <Text text="{fields>SegmentFilterFieldName}" />
-                                            <Text text="{fields>SegmentFilterFieldValue}" />
-                                        </cells>
-                                    </ColumnListItem>
-                                </items>
-                            </Table>
+                            <OverflowToolbar class="sapFDynamicPageAlignContent">
+                                <ToolbarSpacer />
+                                <SearchField search=".onSearchFields"
+                                    width="17.5rem" />
+                                <OverflowToolbarButton icon="sap-icon://sort"
+                                    text="Sort"
+                                    tooltip="Sort Field"
+                                    type="Transparent"
+                                    press=".onSortFields" />
+                                <Button type="Default"
+						            text="New Field"
+						            icon="sap-icon://create"
+                                    tooltip="Create Field"
+						            press=".onCreateField" />
+                                <!-- <OverflowToolbarButton icon="sap-icon://filter" text="Filter" type="Transparent" press=".onFilter" /> -->
+                                <!-- <OverflowToolbarButton icon="sap-icon://add"
+                                    text="Create"
+                                    tooltip="Create Field"
+                                    type="Transparent"
+                                    press=".onCreateField" /> -->
+                            </OverflowToolbar>
+                            <ScrollContainer id="idScrollContainerField"
+                                horizontal="false"
+                                height="auto"
+                                vertical="true">
+                                <Table id="idFieldsTable" 
+                                    sticky="ColumnHeaders" 
+                                    inset="false"
+                                    class="sapFDynamicPageAlignContent"
+                                    width="auto"
+                                    items="{
+                                        path: 'ToFields',
+                                        parameters: {
+								            operationMode: 'Client'
+							            },
+							            sorter: {
+								            path: 'FieldName'
+							            } 
+                                    }">
+                                    <columns>
+                                        <Column >
+                                            <Text text="Segment" />
+                                        </Column>
+                                        <Column >
+                                            <Text text="Segment Field" />
+                                        </Column>
+                                        <Column minScreenWidth="Tablet"
+                                            demandPopin="false">
+                                            <Text text="Counter" />
+                                        </Column>
+                                        <Column minScreenWidth="Tablet"
+                                            demandPopin="false">
+                                            <Text text="Column Seq." />
+                                        </Column>
+                                        <!-- <Column minScreenWidth="Tablet"
+                                            demandPopin="false">
+                                            <Text text="Screen Field" />
+                                        </Column> -->
+                                        <Column minScreenWidth="Desktop"
+                                            demandPopin="false">
+                                            <Text text="Reference Table" />
+                                        </Column>
+                                        <Column minScreenWidth="Desktop"
+                                            demandPopin="false">
+                                            <Text text="Reference Field" />
+                                        </Column>
+                                        <Column minScreenWidth="Desktop"
+                                            demandPopin="false">
+                                            <Text text="Field Label" />
+                                        </Column>
+                                        <!-- <Column minScreenWidth="Desktop"
+                                            demandPopin="false">
+                                            <Text text="Field Format" />
+                                        </Column>
+                                        <Column minScreenWidth="Desktop"
+                                            demandPopin="false">
+                                            <Text text="Field Offset" />
+                                        </Column>
+                                        <Column minScreenWidth="Desktop"
+                                            demandPopin="false">
+                                            <Text text="Field Length" />
+                                        </Column>
+                                        <Column minScreenWidth="Desktop"
+                                            demandPopin="false">
+                                            <Text text="Segment Field" />
+                                        </Column>
+                                        <Column minScreenWidth="Desktop"
+                                            demandPopin="false">
+                                            <Text text="Field Value" />
+                                        </Column> -->
+                                        <Column minScreenWidth="Tablet">
+                                            <Text text="Actions" />
+                                        </Column>
+                                    </columns>
+                                    <items>
+                                        <ColumnListItem type="Active" 
+                                            press="onSelectField">
+                                            <cells>
+                                                <ObjectIdentifier title="{Segment}" />
+                                                <ObjectIdentifier title="{FieldName}" />
+                                                <ObjectIdentifier title="{Counter}" />
+                                                <Text text="{ColumnNo}" />
+                                                <!-- <Text text="{ScreenSelection}" /> -->
+                                                <Text text="{ReferenceTable}" />
+                                                <Text text="{ReferenceField}" />
+                                                <Text text="{FieldLabel}" />
+                                                <!-- <Text text="{FieldFormat}" />
+                                                <Text text="{FieldOffset}" />
+                                                <Text text="{FieldLength}" />
+                                                <Text text="{SegmentFilterFieldName}" />
+                                                <Text text="{SegmentFilterFieldValue}" /> -->
+                                                <OverflowToolbar class="sapFDynamicPageAlignContent"
+                                                    style="Clear">
+                                                    <OverflowToolbarButton icon="sap-icon://duplicate"
+                                                        text="Clone"
+                                                        type="Transparent"
+                                                        press=".onCloneField" />
+                                                    <OverflowToolbarButton icon="sap-icon://delete"
+                                                        text="Delete"
+                                                        type="Transparent"
+                                                        press=".onDeleteField" />
+                                                </OverflowToolbar>
+                                            </cells>
+                                        </ColumnListItem>
+                                    </items>
+                                </Table>
+                            </ScrollContainer>
+                            <smartForm:SmartForm id="idFieldSmartForm"
+                                editTogglable="true"
+                                class="editableForm sapUiTinyMarginTop"
+                                editable="false"
+                                entityType="ZLHSL_TIMCONFIG_SRV.Fields"
+                                editToggled=".onEditToggledField"
+                                visible="false"
+                                validationError=".onValidationError"
+                                validationSuccess=".onValidationSuccess">
+
+                                <smartForm:Group id="idFldSFGroup1">
+                                    <smartForm:GroupElement label="Parent Segment">
+                                        <smartField:SmartField value="{Segment}" />
+                                    </smartForm:GroupElement>
+                                    <smartForm:GroupElement label="Segment Field">
+                                        <smartField:SmartField value="{FieldName}" />
+                                    </smartForm:GroupElement>
+                                    <smartForm:GroupElement label="Counter">
+                                        <smartField:SmartField value="{Counter}" />
+                                    </smartForm:GroupElement>
+                                    <smartForm:GroupElement label="Column">
+                                        <smartField:SmartField value="{ColumnNo}" />
+                                    </smartForm:GroupElement>
+                                    <smartForm:GroupElement label="Screen Field">
+                                        <smartField:SmartField value="{ScreenSelection}" />
+                                    </smartForm:GroupElement>
+                                    <smartForm:GroupElement label="Reference Table">
+                                        <smartField:SmartField value="{ReferenceTable}" />
+                                    </smartForm:GroupElement>
+                                    <smartForm:GroupElement label="Reference Field Name">
+                                        <smartField:SmartField value="{ReferenceField}" />
+                                    </smartForm:GroupElement>
+                                    <smartForm:GroupElement label="Medium Label">
+                                        <smartField:SmartField value="{FieldLabel}" />
+                                    </smartForm:GroupElement>
+                                </smartForm:Group>
+                                <smartForm:Group id="idFldSFGroup2">
+                                    <smartForm:GroupElement label="Format">
+                                        <smartField:SmartField value="{FieldFormat}" />
+                                    </smartForm:GroupElement>
+                                    <smartForm:GroupElement label="Offset">
+                                        <smartField:SmartField value="{FieldOffset}" />
+                                    </smartForm:GroupElement>
+                                    <smartForm:GroupElement label="Length">
+                                        <smartField:SmartField value="{FieldLength}" />
+                                    </smartForm:GroupElement>
+                                    <smartForm:GroupElement label="Segment field">
+                                        <smartField:SmartField value="{SegmentFilterFieldName}" />
+                                    </smartForm:GroupElement>
+                                    <smartForm:GroupElement label="Field Value">
+                                        <smartField:SmartField value="{SegmentFilterFieldValue}" />
+                                    </smartForm:GroupElement>
+                                </smartForm:Group>
+                            </smartForm:SmartForm>
                         </VBox>
                     </uxap:ObjectPageSubSection>
-
-                    <!-- <uxap:ObjectPageSubSection id="idFieldDetails" title="Fields" titleUppercase="false">
-
-                    </uxap:ObjectPageSubSection> -->
                 </uxap:subSections>
             </uxap:ObjectPageSection>
         </uxap:sections>
+        <!-- DynamicPage Footer -->
+        <uxap:footer>
+            <OverflowToolbar>
+                <Button icon="sap-icon://message-popup"
+                    text="{/messagesLength}"
+                    type="Emphasized"
+                    press=".onMessageButtonPress"
+                    visible="{= !!${/messagesLength}}" />
+                <ToolbarSpacer />
+                <Button type="Accept"
+                    text="Save"
+                    id="idSaveBtn"
+                    press="onSave" />
+                <Button type="Reject"
+                    text="Cancel"
+                    press="onCancel" />
+            </OverflowToolbar>
+        </uxap:footer>
     </uxap:ObjectPageLayout>
 </mvc:View>

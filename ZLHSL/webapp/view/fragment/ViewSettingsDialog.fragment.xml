@@ -1,0 +1,45 @@
+<core:FragmentDefinition
+	xmlns="sap.m"
+	xmlns:core="sap.ui.core">
+	<ViewSettingsDialog confirm="handleConfirm" filterDetailPageOpened=".onFilterPage">
+        <sortItems>
+			<ViewSettingsItem text="Function ID" key="FunctionID" selected="true" />
+			<ViewSettingsItem text="Function Name" key="FunctionText" />
+			<ViewSettingsItem text="Partner" key="Partner" />
+			<ViewSettingsItem text="Partner Type" key="PartnerType" />
+		</sortItems>
+		<groupItems>
+			<ViewSettingsItem text="Function ID" key="FunctionID" />
+			<ViewSettingsItem text="Function Name" key="FunctionText" />
+			<ViewSettingsItem text="Partner" key="Partner" />
+			<ViewSettingsItem text="Partner Type" key="PartnerType" />
+		</groupItems>
+		<filterItems>
+			<ViewSettingsFilterItem key="FunctionID" text="Function ID" items="{path: '/FunctionSet'}" >
+				<items>
+					<ViewSettingsItem text="{FunctionID}" key="FunctionID__EQ__{FunctionID}"  />
+				</items>
+			</ViewSettingsFilterItem>
+			<ViewSettingsFilterItem key="FunctionText" text="Function Name" items="{path: '/FunctionSet'}" >
+				<items>
+					<ViewSettingsItem text="{FunctionText}" key="{FunctionText}" />
+				</items>
+			</ViewSettingsFilterItem>
+			<ViewSettingsFilterItem key="Partner" text="Partner" items="{path: '/FunctionSet'}">
+				<items>
+					<ViewSettingsItem text="{Partner}" key="{Partner}" />
+				</items>
+			</ViewSettingsFilterItem>
+            <ViewSettingsFilterItem key="PartnerType" text="Partner Type" items="{path: '/FunctionSet'}">
+				<items>
+					<ViewSettingsItem text="{PartnerType}" key="PartnerType__EQ__{PartnerType}__X" />
+				</items>
+			</ViewSettingsFilterItem>
+            <ViewSettingsFilterItem key="Active" text="Active" items="{path: '/FunctionSet'}">
+				<items>
+					<ViewSettingsItem text="{Active}" key="{Active}" />
+				</items>
+			</ViewSettingsFilterItem>
+		</filterItems>
+	</ViewSettingsDialog>
+</core:FragmentDefinition>

@@ -19,7 +19,7 @@ sap.ui.define(
 
 		var LayoutType = library.LayoutType;
 
-		return UIComponent.extend("zlhsl.Component", {
+		return UIComponent.extend("zlhslc.Component", {
 			metadata: {
 				manifest: "json",
 			},
@@ -37,9 +37,10 @@ sap.ui.define(
 					// var oParams = UriParameters.fromQuery(location.search),
 					var oSettings = {
 						defaultTwoColumnLayoutType: LayoutType.TwoColumnsMidExpanded,
-						defaultThreeColumnLayoutType: LayoutType.ThreeColumnsEndExpanded,
+						defaultThreeColumnLayoutType: LayoutType.EndColumnFullScreen,
+						// defaultThreeColumnLayoutType: LayoutType.ThreeColumnsEndExpanded,
 						initialColumnsCount: 1, //oParams.get("mode"),
-						maxColumnsCount: 3 //oParams.get("max"),
+						maxColumnsCount: 2 //oParams.get("max"),
 					};
 
 					return FlexibleColumnLayoutSemanticHelper.getInstanceFor(oFCL, oSettings);
@@ -72,11 +73,6 @@ sap.ui.define(
 				}
 				return this._sContentDensityClass;
 			}
-
-			// toggleFooter: function (idSmartForm) {
-			// 	this.getPage().setShowFooter(this.getView().byId(idSmartForm).getEditable());
-			// 	// this.getPage().setShowFooter(!this.getPage().getShowFooter());
-			// }
 		});
 	}
 );

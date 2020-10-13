@@ -1,7 +1,7 @@
 {
 	"_version": "1.12.0",
 	"sap.app": {
-		"id": "zlhsl",
+		"id": "zlhslc",
 		"type": "application",
 		"i18n": "i18n/i18n.properties",
 		"title": "{{appTitle}}",
@@ -35,7 +35,7 @@
 			"cozy": true
 		},
 		"rootView": {
-			"viewName": "zlhsl.view.App",
+			"viewName": "zlhslc.view.App",
 			"type": "XML",
 			"async": true,
 			"id": "fcl"
@@ -66,15 +66,20 @@
 			"i18n": {
 				"type": "sap.ui.model.resource.ResourceModel",
 				"settings": {
-					"bundleName": "zlhsl.i18n.i18n"
+					"bundleName": "zlhslc.i18n.i18n"
 				}
 			}
+		},
+		"resources": {
+			"css": [{
+				"uri": "css/style.css"
+			}]
 		},
 		"routing": {
 			"config": {
 				"routerClass": "sap.f.routing.Router",
 				"viewType": "XML",
-				"viewPath": "zlhsl.view",
+				"viewPath": "zlhslc.view",
 				"controlId": "flexibleColumnLayout",
 				"transition": "slide",
 				"bypassed": {
@@ -120,7 +125,8 @@
 				},
 				"detailDetail": {
 					"viewName": "SegFields",
-					"controlAggregation": "endColumnPages"
+					"controlAggregation": "endColumnPages",
+					"transition": "slide"
 				}
 			}
 		}

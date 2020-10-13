@@ -1,6 +1,6 @@
 sap.ui.define(["sap/ui/core/mvc/Controller"], function (Controller) {
 	"use strict";
-	return Controller.extend("zlhsl.controller.App", {
+	return Controller.extend("zlhslc.controller.App", {
 		onInit: function () {
 			this.oOwnerComponent = this.getOwnerComponent();
 			this.oRouter = this.oOwnerComponent.getRouter();

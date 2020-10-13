@@ -1,5 +1,5 @@
 <mvc:View displayBlock="true"
-    controllerName="zlhsl.controller.SegFields"
+    controllerName="zlhslc.controller.SegFields"
     xmlns:mvc="sap.ui.core.mvc"
     xmlns="sap.m"
     xmlns:f="sap.f"
