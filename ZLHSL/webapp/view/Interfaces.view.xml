@@ -82,25 +82,27 @@
 		</f:header>
 		<f:content>
 			<VBox id="idInteracePage">
-				<OverflowToolbar class="sapFDynamicPageAlignContent sapUiTinyMarginBeginEnd">
+				<OverflowToolbar class="sapFDynamicPageAlignContent">
 					<Title id="idTabTitle"
 						text="Interfaces"
 						titleStyle="H2" />
 					<!-- <Title text="Interfaces ({interfaces>/length})" level="H2"/> -->
 					<ToolbarSpacer />
+					<Text id="idFilterLabel"/>
 					<SearchField search=".onSearch"
+						liveChange=".onSearch"
+						placeholder="Search Interfaces"
 						width="17.5rem" />
-					<OverflowToolbarButton icon="sap-icon://sort"
-						text="Sort"
-						tooltip="Sort Interface"
-						type="Transparent"
-						press=".onSort" />
-					<!-- <OverflowToolbarButton icon="sap-icon://filter" text="Filter" type="Transparent" press=".onFilter" /> -->
-					<OverflowToolbarButton icon="sap-icon://add"
-						text="Create"
+					<Button type="Default"
+						text="New Interface"
 						tooltip="Create Interface"
-						type="Transparent"
+						icon="sap-icon://create"
 						press=".onCreate" />
+					<OverflowToolbarButton icon="sap-icon://action-settings"
+						text="Settings"
+						tooltip="View Settings"
+						type="Transparent"
+						press=".onSettingsPress" />
 				</OverflowToolbar>
 				<ScrollContainer id="idScrollContainer"
 					class="sapUiSmallMarginBottom"
@@ -111,28 +113,29 @@
 						modeAnimationOn="true"
 						noDataText="No interface assigned to this function."
 						sticky="ColumnHeaders"
-						class="sapFDynamicPageAlignContent sapUiTinyMarginBeginEnd"
+						class="sapFDynamicPageAlignContent"
 						width="auto"
 						items="{
 							path: 'ToInterfaces',
+							parameters: {
+								operationMode: 'Client'
+							},
 							sorter: {
 								path: 'InterfaceID'
 							} 
 						}"
-						mode="SingleSelectLeft"
 						alternateRowColors="true"
-						selectionChange=".onSelectionChange"
 						updateFinished=".onUpdateFinished">
 						<columns>
 							<Column >
-								<Text text="Interface" />
+								<Text text="Interface ID" />
 							</Column>
 							<Column minScreenWidth="Tablet"
 								demandPopin="true"
 								popinDisplay="WithoutHeader">
 								<Text text="Interface Name" />
 							</Column>
-							<Column minScreenWidth="Tablet"
+							<Column minScreenWidth="Desktop"
 								demandPopin="false">
 								<Text text="Interface Type" />
 							</Column>
@@ -169,7 +172,9 @@
 							<ColumnListItem type="Navigation"
 								press=".onListItemPress">
 								<cells>
-									<ObjectIdentifier title="{InterfaceID}" />
+									<ObjectIdentifier title="{InterfaceID}"
+										titleActive="true"
+										titlePress="onTitlePress" />
 									<Text text="{InterfaceText}" />
 									<Text text="{InterfaceType}" />
 									<ObjectStatus icon="{path: 'Direction', 
@@ -194,6 +199,10 @@
 									</Switch>
 									<OverflowToolbar class="sapFDynamicPageAlignContent"
 										style="Clear">
+										<OverflowToolbarButton icon="sap-icon://edit"
+											text="Edit"
+											type="Transparent"
+											press=".onEdit" />
 										<OverflowToolbarButton icon="sap-icon://duplicate"
 											text="Clone"
 											type="Transparent"
@@ -210,7 +219,7 @@
 				</ScrollContainer>
 				<Panel id="idSFPanel"
 					backgroundDesign="Solid"
-					class="sapUiSmallMarginTop"
+					class="sapUiTinyMarginTop"
 					visible="false">
 					<smartForm:SmartForm id="idInterfaceSmartForm"
 						editTogglable="true"
@@ -223,7 +232,7 @@
 						validationSuccess=".onValidationSuccess">
 
 						<smartForm:Group id="idSFGroup1">
-							<smartForm:GroupElement label="Interface">
+							<smartForm:GroupElement label="Interface ID">
 								<smartField:SmartField value="{InterfaceID}" />
 							</smartForm:GroupElement>
 							<smartForm:GroupElement label="Name">

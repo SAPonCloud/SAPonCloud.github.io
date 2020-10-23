@@ -29,25 +29,24 @@
 						icon="sap-icon://create"
 						press=".onCreate" />
 					<ToolbarSpacer />
+					<Text id="idFilterLabel"/>
 					<SearchField search=".onSearch"
-						width="17.5rem" placeholder="Search Function"/>
-					<!-- <OverflowToolbarButton icon="sap-icon://sort" text="Sort" tooltip="Sort Functions" type="Transparent" press=".onSort" />
-					<OverflowToolbarButton icon="sap-icon://filter" text="Filter" type="Transparent" press=".onFilter" /> -->
+						width="17.5rem"
+						placeholder="Search Function" liveChange=".onSearch" />
 					<OverflowToolbarButton icon="sap-icon://action-settings"
 						text="Settings"
 						tooltip="View Settings"
 						type="Transparent"
 						press=".onSettingsPress" />
 				</OverflowToolbar>
-				<ScrollContainer height="240px"
+				<ScrollContainer id="idScrollContainer" 
+					height="auto"
 					class="sapUiSmallMarginBottom"
 					horizontal="false"
 					vertical="true">
 					<Table id="functionsTable"
 						enableBusyIndicator="true"
-						mode="SingleSelectLeft"
-						selectionChange=".onSelectionChange"
-						inset="false" 
+						inset="false"
 						items="{
 							path: '/FunctionSet',
 							parameters: {
@@ -66,7 +65,7 @@
 						sticky="ColumnHeaders"
 						updateFinished=".onUpdateFinished">
 						<columns>
-							<Column width="12em" 
+							<Column width="12em"
 								class="sapUiTinyMargin">
 								<Text text="Function ID" />
 							</Column>
@@ -95,10 +94,13 @@
 							</Column>
 						</columns>
 						<items>
-							<ColumnListItem type="Navigation"
-								press=".onListItemPress" >
+							<ColumnListItem type="Navigation" 
+								detailPress="onDetailItemPress" 
+								press=".onListItemPress">
 								<cells>
-									<ObjectIdentifier title="{FunctionID}" />
+									<ObjectIdentifier title="{FunctionID}" 
+										titleActive="true" 
+										titlePress="onTitlePress"/>
 									<Text text="{FunctionText}" />
 									<Text text="{Partner}" />
 									<Text text="{PartnerType}" />
@@ -113,7 +115,10 @@
 									</Switch>
 									<OverflowToolbar class="sapFDynamicPageAlignContent"
 										style="Clear">
-										<!-- <OverflowToolbarButton icon="sap-icon://edit" text="Edit" type="Transparent" press=".onEdit" /> -->
+										<OverflowToolbarButton icon="sap-icon://edit"
+											text="Edit"
+											type="Transparent"
+											press=".onEdit" />
 										<OverflowToolbarButton icon="sap-icon://duplicate"
 											text="Clone"
 											type="Transparent"
@@ -129,7 +134,7 @@
 					</Table>
 				</ScrollContainer>
 				<!-- <VBox backgroundDesign="Translucent"> -->
-				<Panel id="idSFPanel" 
+				<Panel id="idSFPanel"
 					backgroundDesign="Solid"
 					class="sapUiSmallMarginTop"
 					visible="false">

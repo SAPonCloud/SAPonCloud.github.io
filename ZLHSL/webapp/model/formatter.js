@@ -4,7 +4,7 @@ sap.ui.define([], function () {
         directionIcon: function (sDirection) {
             if (sDirection === '1') {
                 return "sap-icon://outbox";
-            } else {
+            } else if (sDirection === '2') {
                 return "sap-icon://inbox";
             }
         },
@@ -12,7 +12,7 @@ sap.ui.define([], function () {
         directionText: function (sDirection) {
             if (sDirection === '1') {
                 return "Outbound";
-            } else {
+            } else if (sDirection === '2') {
                 return "Inbound";
             }
         },
@@ -20,7 +20,7 @@ sap.ui.define([], function () {
         directionState: function (sDirection) {
             if (sDirection === '1') {
                 return "Information";
-            } else {
+            } else if (sDirection === '2') {
                 return "Success";
             }
         },

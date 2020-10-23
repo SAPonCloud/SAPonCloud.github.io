@@ -21,9 +21,13 @@ sap.ui.define([
 
 			onSearch: function (oEvent) {
 				var oTableSearchState = [],
-					sQuery = oEvent.getParameter("query");
+					sQuery = oEvent.getParameter("query"),
+					sNewValue = oEvent.getParameter("newValue");
 
-				if (sQuery && sQuery.length > 0) {
+				if ((sQuery && sQuery.length > 0) || (sNewValue)) {
+					if (oEvent.getParameter("newValue")) {
+						sQuery = sNewValue;
+					}
 					oTableSearchState = [
 						new Filter("FunctionID", FilterOperator.Contains, sQuery),
 						new Filter("FunctionText", FilterOperator.Contains, sQuery),
@@ -44,17 +48,6 @@ sap.ui.define([
 				}
 			},
 
-			onSort: function () {
-				//Toggle the sorting
-				this._bDescendingSort = !this._bDescendingSort;
-				var oView = this.getView(),
-					oTable = oView.byId("functionsTable"),
-					oBinding = oTable.getBinding("items"),
-					oSorter = new Sorter("FunctionID", this._bDescendingSort);
-
-				oBinding.sort(oSorter);
-			},
-
 			onSettingsPress: function () {
 				// creates dialog list if not yet created
 				// if (!this._oDialogs) {
@@ -70,16 +63,23 @@ sap.ui.define([
 						this._oDialogs = oDialog;
 						this.getView().addDependent(this._oDialogs);
 
-						// this._oDialogs.bindFilterItems("filterItems>/items",
-						// 	function (sId, oContext) {
-						// 		debugger;
-						// 		return new sap.m.ViewSettingsFilterItem({
-						// 			key: oContext.getObject().template,
-						// 			text: oContext.getObject().label,
-						// 			multiSelect: false,
-						// 			items: this.getViewSettingsItems(oContext.getObject().template, oContext.getObject().type)
-						// 		});
-						// 	}.bind(this));
+						// this._oDialogs.bindFilterItems("filterItems>/items", function (sId, oContext) {
+						// 	debugger;
+						// 	return new sap.m.ViewSettingsFilterItem({
+						// 		key: oContext.getObject().template,
+						// 		text: oContext.getObject().label,
+						// 		multiSelect: true,
+						// 		items: this.getViewSettingsItems(oContext.getObject().template, oContext.getObject().type)
+						// 	});
+						// }.bind(this));
+
+						// debugger;
+						// var oFilterModel = new JSONModel();
+						// oFilterModel.setData({
+						// 	items: this._aCols
+						// });
+						// this._oFilterDialog.setModel(oFilterModel, "filterItems");
+						// oFilterModel.refresh();
 
 						// opens the dialog
 						this._oDialogs.open();
@@ -90,8 +90,35 @@ sap.ui.define([
 				}
 			},
 
-			onFilterPage: function (oEvent) {
-				debugger;
+			getViewSettingsItems: function (template, type) {
+				var aItems = [];
+				var aUsed = [];
+				var oReportModel = this.getOwnerComponent().getModel("dynamicReportModel");
+				oReportModel.getObject("/").forEach(function (oRow, index) {
+					if (!aUsed.includes(oRow[template])) {
+						var formattedText;
+						switch (type) {
+							case "@":
+								formattedText = this.formatter.iconText(oRow[template]);
+								break;
+							case "N":
+								formattedText = this.formatter.docnum(oRow[template]);
+								break;
+							case "D":
+								formattedText = this.formatter.date(oRow[template]);
+								break;
+							default:
+								formattedText = oRow[template];
+								break;
+						}
+						aUsed.push(oRow[template]);
+						aItems.push(new sap.m.ViewSettingsItem({
+							text: formattedText,
+							key: template + "___" + "EQ" + "___" + oRow[template] + "___X"
+						}));
+					}
+				}.bind(this));
+				return aItems;
 			},
 
 			onCreate: function (oEvent) {
@@ -126,23 +153,8 @@ sap.ui.define([
 				oSmartForm.setVisible(true);
 				oSmartForm.setEditable(true);
 				oSmartForm.setProperty("title", "Create Function");
-			},
 
-			onSelectionChange: function (oEvent) {
-				this.getView().byId("idSFPanel").setVisible(true);
-				// var oDataModel = this.getOwnerComponent().getModel();
-				var oSmartForm = this.getView().byId("idSmartForm");
-				oSmartForm.bindElement(oEvent.getSource().getSelectedContextPaths()[0]);
-				oSmartForm.getModel().setDefaultBindingMode("TwoWay");
-				oSmartForm.setVisible(true);
-				if (oSmartForm.getProperty("editable")) {
-					oSmartForm.setProperty("title", "Change Function");
-				} else {
-					oSmartForm.setProperty("title", "Function");
-				}
-
-				this._function = this.getView().getModel().getData(oEvent.getSource().getSelectedContextPaths()[0]);
-				// this.getView().byId("idSwitch").getModel().setDefaultBindingMode("TwoWay");
+				this.setTableHeight();
 			},
 
 			onListItemPress: function (oEvent) {
@@ -159,7 +171,7 @@ sap.ui.define([
 			},
 
 			onUpdateFinished: function (oEvent) {
-				var count = oEvent.getParameter("total");
+				var iCount = oEvent.getParameter("total");
 				var oTitle = this.getView().byId("entityTitle");
 				oTitle.setProperty(
 					"text",
@@ -167,9 +179,20 @@ sap.ui.define([
 					.getModel("i18n")
 					.getResourceBundle()
 					.getText("title.text.Functions") +
-					" (" + count + ")"
+					" (" + iCount + ")"
 				);
 				this.getView().byId("functionsTable").setBusy(false);
+
+				this._iFuncCount = iCount;
+				this.setTableHeight();
+			},
+
+			setTableHeight: function () {
+				if (this._iFuncCount > 5 && this.byId("idSFPanel").getVisible()) {
+					this.byId("idScrollContainer").setProperty("height", "240px");
+				} else {
+					this.byId("idScrollContainer").setProperty("height", "auto");
+				}
 			},
 
 			toggleFooter: function () {
@@ -257,17 +280,31 @@ sap.ui.define([
 				this.toggleFooter();
 			},
 
-			_checkDataChanged: function () {
+			_fnCheckOnEditToggled: function (oAction) {
+				if (oAction === 'OK') {
+					this.getView().byId("idSmartForm").getModel().resetChanges();
+				} else {
+					this.getView().byId("idSmartForm").setEditable(true);
+				};
+			},
+
+			_fnCheckOnSwitchFunction: function (oAction) {
+				if (oAction === 'OK') {
+					this.getView().byId("idSmartForm").getModel().resetChanges();
+					this.showFunctionDetails(this._sPath, true);
+				}
+				delete this._sPath;
+			},
+
+			_checkDataChanged: function (fnName) {
 				if (this._function !==
 					this.getView().byId("idSmartForm").getModel().getData(this.getView().byId("idSmartForm").getBindingContext().getPath())) {
-					MessageBox.confirm("Function has changed. Discard Changes?",
-						function (oAction) {
-							if (oAction === 'OK') {
-								this.getView().byId("idSmartForm").getModel().resetChanges();
-							} else {
-								this.getView().byId("idSmartForm").setEditable(true);
-							};
-						}.bind(this));
+
+					MessageBox.confirm("Function has changed. Discard Changes?", fnName.bind(this));
+					return true;
+
+				} else {
+					return false;
 				}
 			},
 
@@ -275,7 +312,7 @@ sap.ui.define([
 				var bEditable = oEvent.getParameter("editable");
 
 				if (this._function !== null && bEditable === false) {
-					this._checkDataChanged();
+					this._checkDataChanged(this._fnCheckOnEditToggled);
 				}
 
 				// this.getView().byId("idSwitch").setProperty("enabled", bEditable);
@@ -324,7 +361,7 @@ sap.ui.define([
 			onClone: function (oEvent) {
 				this._bCreateMode = true;
 				this._function = null;
-
+				debugger;
 				var oSmartForm = this.byId("idSmartForm"),
 					oDataModel = this.getView().getModel(),
 					sPath = oEvent.getSource().getParent().getParent().getBindingContextPath(),
@@ -358,17 +395,56 @@ sap.ui.define([
 					properties: oData
 				}));
 
-				this.getView().byId("idSFPanel").setVisible(false);
+				this.getView().byId("idSFPanel").setVisible(true);
 				oSmartForm.setVisible(true);
 				oSmartForm.setEditable(true);
 				oSmartForm.setProperty("title", "Copy Function");
+				this.setTableHeight();
+			},
+
+			showFunctionDetails: function (sPath, bVisible) {
+				this.getView().byId("idSFPanel").setVisible(true);
+				this.setTableHeight();
+				var oSmartForm = this.getView().byId("idSmartForm");
+				oSmartForm.setVisible(true);
+				oSmartForm.setEditable(bVisible);
+				if (oSmartForm.getEditable()) {
+					oSmartForm.setProperty("title", "Change Function");
+				} else {
+					oSmartForm.setProperty("title", "Function");
+				}
+				oSmartForm.bindElement(sPath);
+				oSmartForm.getModel().setDefaultBindingMode("TwoWay");
+				this._function = this.getView().getModel().getData(sPath);
+			},
+
+			onTitlePress: function (oEvent) {
+				var sPath = oEvent.getSource().getBindingContext().getPath();
+				this.showFunctionDetails(sPath, false);
+			},
+
+			onEdit: function (oEvent) {
+				this._sPath = oEvent.getSource().getBindingContext().getPath();
+				var bChanged = false;
+
+				if (this._function !== null) {
+					if (this._function.FunctionID === oEvent.getSource().getBindingContext().getProperty("FunctionID")) {
+						MessageToast.show("Function '" + this._function.FunctionID + "' is already being edited.");
+						return;
+					}
+					bChanged = this._checkDataChanged(this._fnCheckOnSwitchFunction);
+				}
+
+				if (!bChanged) {
+					this.showFunctionDetails(this._sPath, true);
+					delete this._sPath;
+				}
 			},
 
 			getPage: function () {
 				return this.byId("dynamicPageId");
 			},
 
-			// shows selected filters
 			handleConfirm: function (oEvent) {
 				this.performSortGroup(oEvent);
 
@@ -379,12 +455,21 @@ sap.ui.define([
 				var oParams = oEvent.getParameters(),
 					oTable = this.getView().byId("functionsTable"),
 					oBinding = oTable.getBinding("items"),
-					aFilter = [];
+					aFilters = [];
 
 				if (oParams.filterItems) {
-					debugger;
+					oParams.filterItems.forEach(function (oItem) {
+						var aSplit = oItem.getKey().split("___"),
+							sPath = aSplit[0],
+							sOperator = aSplit[1],
+							sValue1 = aSplit[2],
+							sValue2 = aSplit[3],
+							oFilter = new Filter(sPath, sOperator, sValue1, sValue2);
+						aFilters.push(oFilter);
+					});
 				}
 				oBinding.filter(aFilters);
+				this.byId("idFilterLabel").setText(oParams.filterString);
 			},
 
 			performSortGroup: function (oEvent) {
@@ -408,13 +493,8 @@ sap.ui.define([
 						}
 					));
 				}
-
-				if (aSorters) {
-					oBinding.sort(aSorters);
-				}
-				if (aGroups) {
-					oBinding.sort(aGroups);
-				}
+				aGroups = aGroups.concat(aSorters);
+				oBinding.sort(aGroups);
 			},
 
 			// onExit - destroy created dialogs
@@ -423,7 +503,39 @@ sap.ui.define([
 					this._oDialogs.destroy();
 				}
 				this._oDialogs = null;
-			}
+			},
 
+			onFilterPage: function (oEvent) {
+				var aValues = [];
+				var aNewItems = [];
+				oEvent.getParameters().parentFilterItem.getItems().forEach(function (oItem, i) {
+					if (!aValues.includes(oItem.getKey())) {
+						aNewItems.push(oItem);
+					}
+					aValues.push(oItem.getKey());
+				});
+				oEvent.getParameters().parentFilterItem.removeAllItems();
+				aNewItems.forEach(function (oItem, i) {
+					oEvent.getParameters().parentFilterItem.addItem(oItem);
+				});
+			},
+
+			// onSelectionChange: function (oEvent) {
+			// 	this.getView().byId("idSFPanel").setVisible(true);
+			// 	// var oDataModel = this.getOwnerComponent().getModel();
+			// 	var oSmartForm = this.getView().byId("idSmartForm");
+			// 	oSmartForm.setVisible(true);
+			// 	if (oSmartForm.getProperty("editable")) {
+			// 		oSmartForm.setProperty("title", "Change Function");
+			// 	} else {
+			// 		oSmartForm.setProperty("title", "Function");
+			// 	}
+			// 	oSmartForm.bindElement(oEvent.getSource().getSelectedContextPaths()[0]);
+			// 	oSmartForm.getModel().setDefaultBindingMode("TwoWay");
+			//	
+			// 	this._function = this.getView().getModel().getData(oEvent.getSource().getSelectedContextPaths()[0]);
+			// },
+
+			// onSort: function () {
 		});
 	});

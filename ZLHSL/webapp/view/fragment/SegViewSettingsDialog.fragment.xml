@@ -1,0 +1,40 @@
+<core:FragmentDefinition
+	xmlns="sap.m"
+	xmlns:core="sap.ui.core">
+	<ViewSettingsDialog confirm="handleConfirmSeg" filterDetailPageOpened=".onFilterPage">
+        <sortItems>
+			<ViewSettingsItem text="Segment" key="SegmentName" selected="true" />
+			<ViewSettingsItem text="Segment Level" key="SegmentLevel" />
+			<ViewSettingsItem text="Parent Segment" key="ParentSegment" />
+			<ViewSettingsItem text="Parent Field" key="ParentFieldName" />
+		</sortItems>
+		<groupItems>
+			<ViewSettingsItem text="Segment" key="SegmentName" />
+			<ViewSettingsItem text="Segment Level" key="SegmentLevel" />
+			<ViewSettingsItem text="Parent Segment" key="ParentSegment" />
+			<ViewSettingsItem text="Parent Field" key="ParentFieldName" />
+		</groupItems>
+		<filterItems>
+			<ViewSettingsFilterItem text="Segment" key="SegmentName" items="{ToSegments}" >
+				<items>
+					<ViewSettingsItem text="{SegmentName}" key="SegmentName___EQ___{SegmentName}___X"  />
+				</items>
+			</ViewSettingsFilterItem>
+			<ViewSettingsFilterItem text="Segment Level" key="SegmentLevel" items="{ToSegments}"  >
+				<items>
+					<ViewSettingsItem text="{SegmentLevel}" key="SegmentLevel___EQ___{SegmentLevel}___X" />
+				</items>
+			</ViewSettingsFilterItem>
+			<ViewSettingsFilterItem text="Parent Segment" key="ParentSegment" items="{ToSegments}" >
+				<items>
+					<ViewSettingsItem text="{ParentSegment}" key="ParentSegment___EQ___{ParentSegment}___X" />
+				</items>
+			</ViewSettingsFilterItem>
+            <ViewSettingsFilterItem text="Parent Field" key="ParentFieldName" items="{ToSegments}" >
+				<items>
+					<ViewSettingsItem text="{ParentFieldName}" key="ParentFieldName___EQ___{ParentFieldName}___X" />
+				</items>
+			</ViewSettingsFilterItem>
+		</filterItems>
+	</ViewSettingsDialog>
+</core:FragmentDefinition>

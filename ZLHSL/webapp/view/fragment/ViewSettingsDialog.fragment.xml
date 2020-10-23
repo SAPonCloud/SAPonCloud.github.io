@@ -17,27 +17,27 @@
 		<filterItems>
 			<ViewSettingsFilterItem key="FunctionID" text="Function ID" items="{path: '/FunctionSet'}" >
 				<items>
-					<ViewSettingsItem text="{FunctionID}" key="FunctionID__EQ__{FunctionID}"  />
+					<ViewSettingsItem text="{FunctionID}" key="FunctionID___EQ___{FunctionID}___X"  />
 				</items>
 			</ViewSettingsFilterItem>
-			<ViewSettingsFilterItem key="FunctionText" text="Function Name" items="{path: '/FunctionSet'}" >
+			<ViewSettingsFilterItem key="FunctionText" text="Function Name" items="{path: '/FunctionSet'}"  >
 				<items>
-					<ViewSettingsItem text="{FunctionText}" key="{FunctionText}" />
+					<ViewSettingsItem text="{FunctionText}" key="FunctionText___EQ___{FunctionText}___X" />
 				</items>
 			</ViewSettingsFilterItem>
-			<ViewSettingsFilterItem key="Partner" text="Partner" items="{path: '/FunctionSet'}">
+			<ViewSettingsFilterItem key="Partner" text="Partner" items="{path: '/FunctionSet'}" >
 				<items>
-					<ViewSettingsItem text="{Partner}" key="{Partner}" />
+					<ViewSettingsItem text="{Partner}" key="Partner___EQ___{Partner}___X" />
 				</items>
 			</ViewSettingsFilterItem>
-            <ViewSettingsFilterItem key="PartnerType" text="Partner Type" items="{path: '/FunctionSet'}">
+            <ViewSettingsFilterItem key="PartnerType" text="Partner Type" items="{path: '/FunctionSet'}" >
 				<items>
-					<ViewSettingsItem text="{PartnerType}" key="PartnerType__EQ__{PartnerType}__X" />
+					<ViewSettingsItem text="{PartnerType}" key="PartnerType___EQ___{PartnerType}___X" />
 				</items>
 			</ViewSettingsFilterItem>
-            <ViewSettingsFilterItem key="Active" text="Active" items="{path: '/FunctionSet'}">
+            <ViewSettingsFilterItem key="Active" text="Active" items="{path: '/FunctionSet'}" >
 				<items>
-					<ViewSettingsItem text="{Active}" key="{Active}" />
+					<ViewSettingsItem text="{Active}" key="Active___EQ___{Active}___X" />
 				</items>
 			</ViewSettingsFilterItem>
 		</filterItems>

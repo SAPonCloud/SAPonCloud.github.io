@@ -1,0 +1,49 @@
+{
+    "FunctionSet": {
+        "FunctionID": "Function ID",
+        "FunctionText": "Function Name",
+        "Partner": "Partner",
+        "PartnerType": "Partner Type",
+        "Active": "Active"
+    },
+
+    "InterfaceSet": {
+        "FunctionID": "Function ID",
+        "InterfaceID": "Interface ID",
+        "InterfaceText": "Interface Name",
+        "InterfaceType": "Interface Type",
+        "Direction": "Direction",
+        "MessageType": "Message type",
+        "MessageCode": "Message Code",
+        "IdocType": "Basic type",
+        "IDocExtn": "Extension",
+        "InterfaceActive": "Active"
+    },
+
+    "SegmentSet": {
+        "FunctionID": "Function ID",
+        "InterfaceID": "Interface ID",
+        "SegmentName": "Segment",
+        "SegmentLevel": "Segment Level",
+        "ParentSegment": "Parent Segment",
+        "ParentFieldName": "Parent Field"
+    },
+
+    "FieldSet": {
+        "FunctionID": "Function ID",
+        "InterfaceID": "Interface ID",
+        "Segment": "Parent Segment",
+        "FieldName": "Segment Field",
+        "Counter": "Counter",
+        "ColumnNo": "Column No.",
+        "ScreenSelection": "Screen Field",
+        "ReferenceTable": "Reference Table",
+        "ReferenceField": "Reference Field",
+        "FieldLabel": "Medium Label",
+        "FieldFormat": "Format",
+        "FieldOffset": "Offset",
+        "FieldLength": "Length",
+        "SegmentFilterFieldName": "Segment field",
+        "SegmentFilterFieldValue": "Field Value"
+    }
+}

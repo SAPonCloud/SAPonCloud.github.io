@@ -1,0 +1,74 @@
+<core:FragmentDefinition
+	xmlns="sap.m"
+	xmlns:core="sap.ui.core">
+	<ViewSettingsDialog confirm="handleConfirm" filterDetailPageOpened=".onFilterPage">
+        <sortItems>
+			<ViewSettingsItem text="Interface ID" key="InterfaceID" selected="true" />
+			<ViewSettingsItem text="Interface Name" key="InterfaceText" />
+			<ViewSettingsItem text="Interface Type" key="InterfaceType" />
+			<ViewSettingsItem text="Direction" key="Direction" />
+			<ViewSettingsItem text="Message type" key="MessageType" />
+			<ViewSettingsItem text="Message Code" key="MessageCode" />
+			<ViewSettingsItem text="Basic type" key="IDocType" />
+			<ViewSettingsItem text="Extension" key="IDocExtn" />
+		</sortItems>
+		<groupItems>
+			<ViewSettingsItem text="Interface ID" key="InterfaceID" />
+			<ViewSettingsItem text="Interface Name" key="InterfaceText" />
+			<ViewSettingsItem text="Interface Type" key="InterfaceType" />
+			<ViewSettingsItem text="Direction" key="Direction" />
+			<ViewSettingsItem text="Message type" key="MessageType" />
+			<ViewSettingsItem text="Message Code" key="MessageCode" />
+			<ViewSettingsItem text="Basic type" key="IDocType" />
+			<ViewSettingsItem text="Extension" key="IDocExtn" />
+		</groupItems>
+		<filterItems>
+			<ViewSettingsFilterItem text="Interface ID" key="InterfaceID" items="{ToInterfaces}" >
+				<items>
+					<ViewSettingsItem text="{InterfaceID}" key="InterfaceID___EQ___{InterfaceID}___X"  />
+				</items>
+			</ViewSettingsFilterItem>
+			<ViewSettingsFilterItem text="Interface Name" key="InterfaceText" items="{ToInterfaces}"  >
+				<items>
+					<ViewSettingsItem text="{InterfaceText}" key="InterfaceText___EQ___{InterfaceText}___X" />
+				</items>
+			</ViewSettingsFilterItem>
+			<ViewSettingsFilterItem text="Interface Type" key="InterfaceType" items="{ToInterfaces}" >
+				<items>
+					<ViewSettingsItem text="{InterfaceType}" key="InterfaceType___EQ___{InterfaceType}___X" />
+				</items>
+			</ViewSettingsFilterItem>
+            <ViewSettingsFilterItem text="Direction" key="Direction" items="{ToInterfaces}" >
+				<items>
+					<ViewSettingsItem text="{path: 'Direction', 
+									formatter: '.formatter.directionText'}" key="Direction___EQ___{Direction}___X" />
+				</items>
+			</ViewSettingsFilterItem>
+            <ViewSettingsFilterItem text="Active" key="InterfaceActive" items="{ToInterfaces}" >
+				<items>
+					<ViewSettingsItem text="{InterfaceActive}" key="InterfaceActive___EQ___{InterfaceActive}___X" />
+				</items>
+			</ViewSettingsFilterItem>
+			<ViewSettingsFilterItem text="Message type" key="MessageType" items="{ToInterfaces}" >
+				<items>
+					<ViewSettingsItem text="{MessageType}" key="MessageType___EQ___{MessageType}___X" />
+				</items>
+			</ViewSettingsFilterItem>
+			<ViewSettingsFilterItem text="Message Code" key="MessageCode" items="{ToInterfaces}" >
+				<items>
+					<ViewSettingsItem text="{MessageCode}" key="MessageCode___EQ___{MessageCode}___X" />
+				</items>
+			</ViewSettingsFilterItem>
+			<ViewSettingsFilterItem text="Basic type" key="IDocType" items="{ToInterfaces}" >
+				<items>
+					<ViewSettingsItem text="{IDocType}" key="IDocType___EQ___{IDocType}___X" />
+				</items>
+			</ViewSettingsFilterItem>
+			<ViewSettingsFilterItem text="Extension" key="IDocExtn" items="{path: '/InterfaceSet'}" >
+				<items>
+					<ViewSettingsItem text="{IDocExtn}" key="IDocExtn___EQ___{IDocExtn}___X" />
+				</items>
+			</ViewSettingsFilterItem>
+		</filterItems>
+	</ViewSettingsDialog>
+</core:FragmentDefinition>

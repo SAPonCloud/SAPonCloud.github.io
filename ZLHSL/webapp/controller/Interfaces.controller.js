@@ -6,9 +6,10 @@ sap.ui.define([
     "sap/f/library",
     "sap/m/MessageBox",
     "sap/m/MessageToast",
-    "zlhslc/model/formatter"
+    "zlhslc/model/formatter",
+    "sap/ui/core/Fragment"
   ],
-  function (Controller, Filter, FilterOperator, Sorter, library, MessageBox, MessageToast, formatter) {
+  function (Controller, Filter, FilterOperator, Sorter, library, MessageBox, MessageToast, formatter, Fragment) {
     "use strict";
 
     // shortcut for sap.f.DynamicPageTitleArea
@@ -57,9 +58,13 @@ sap.ui.define([
 
       onSearch: function (oEvent) {
         var oTableSearchState = [],
-          sQuery = oEvent.getParameter("query");
+          sQuery = oEvent.getParameter("query"),
+          sNewValue = oEvent.getParameter("newValue");
 
-        if (sQuery && sQuery.length > 0) {
+        if ((sQuery && sQuery.length > 0) || (sNewValue)) {
+          if (oEvent.getParameter("newValue")) {
+            sQuery = sNewValue;
+          }
           oTableSearchState = [
             new Filter("InterfaceID", FilterOperator.Contains, sQuery),
             new Filter("InterfaceText", FilterOperator.Contains, sQuery),
@@ -80,60 +85,57 @@ sap.ui.define([
         }
       },
 
-      onSort: function () {
-        this._bDescendingSort = !this._bDescendingSort;
-        var oView = this.getView(),
-          oTable = oView.byId("idInterfaceTable"),
-          oBinding = oTable.getBinding("items"),
-          oSorter = new Sorter("InterfaceID", this._bDescendingSort);
-
-        oBinding.sort(oSorter);
-      },
-
-      onSelectionChange: function (oEvent) {
-        var interfaceid = oEvent.getSource().getSelectedItem().getCells()[0].getProperty("title"),
-          sPath = "/InterfaceSet(FunctionID='" + this._functionid + "',InterfaceID='" + interfaceid + "')";
-
-        this.getView().byId("idSFPanel").setVisible(true);
-
-        var oSmartForm = this.getView().byId("idInterfaceSmartForm");
-        oSmartForm.bindElement(sPath);
-        oSmartForm.getModel().setDefaultBindingMode("TwoWay");
-        oSmartForm.setVisible(true);
-        if (oSmartForm.getProperty("editable")) {
-          oSmartForm.setProperty("title", "Change Interface");
+      _fnCheckOnEditToggled: function (oAction) {
+        if (oAction === 'OK') {
+          this.getView().byId("idInterfaceSmartForm").getModel().resetChanges();
         } else {
-          oSmartForm.setProperty("title", "Interface");
-        }
-
-        /* Get selected Interface entity*/
-        this._interface = this.getView().getModel().getData(sPath);
+          this.getView().byId("idInterfaceSmartForm").setEditable(true);
+        };
       },
 
-      _checkDataChanged: function () {
+      _fnCheckOnSwitchInterface: function (oAction) {
+        if (oAction === 'OK') {
+          this.getView().byId("idInterfaceSmartForm").getModel().resetChanges();
+          this.showInterfaceDetails(this._sPath, this._bEditable);
+        }
+        delete this._sPath;
+        delete this._bEditable;
+      },
+
+      _checkDataChanged: function (fnName) {
         if (this._interface !==
           this.getView().byId("idInterfaceSmartForm").getModel().getData(
             this.getView().byId("idInterfaceSmartForm").getBindingContext().getPath())) {
           MessageBox.confirm("Interface has changed. Discard Changes?",
-            function (oAction) {
-              if (oAction === 'OK') {
-                this.getView().byId("idInterfaceSmartForm").getModel().resetChanges();
-              } else {
-                this.getView().byId("idInterfaceSmartForm").setEditable(true);
-              };
-            }.bind(this));
+            fnName.bind(this));
+          return true;
+        } else {
+          return false;
         }
+        // if (this._interface !==
+        //   this.getView().byId("idInterfaceSmartForm").getModel().getData(
+        //     this.getView().byId("idInterfaceSmartForm").getBindingContext().getPath())) {
+        //   MessageBox.confirm("Interface has changed. Discard Changes?",
+        //     function (oAction) {
+        //       if (oAction === 'OK') {
+        //         this.getView().byId("idInterfaceSmartForm").getModel().resetChanges();
+        //       } else {
+        //         this.getView().byId("idInterfaceSmartForm").setEditable(true);
+        //       };
+        //     }.bind(this));
+        // }
       },
 
       onEditToggled: function (oEvent) {
         var bEditable = oEvent.getParameter("editable");
 
         if (this._interface !== null && bEditable === false) {
-          this._checkDataChanged();
+          this._checkDataChanged(this._fnCheckOnEditToggled);
         }
 
         if (bEditable) {
           this.getView().byId("idInterfaceSmartForm").setProperty("title", "Change Interface");
+          this.compressHeader();
         } else {
           this.getView().byId("idInterfaceSmartForm").setProperty("title", "Interface");
         }
@@ -141,13 +143,26 @@ sap.ui.define([
         this.toggleFooter();
       },
 
+      compressHeader: function () {
+        this.byId("dynamicPageId").setHeaderExpanded(false);
+      },
+
       _onFunctionMatched: function (oEvent) {
+        var oInterfaceSmartForm = this.byId("idInterfaceSmartForm");
+        if (oInterfaceSmartForm.getEditable()) {
+          MessageToast.show("Interface '" + this._interface.InterfaceID + "' is already being edited. Save or cancel the changes first.");
+          return;
+        } else {
+          this.getView().byId("idSFPanel").setVisible(false);
+          this._interface = null;
+        }
+        // oInterfaceSmartForm.setEditable(false);
+
+
         this._functionid = oEvent.getParameter("arguments").functionid || this._functionid || "0";
         this.getView().bindElement("/FunctionSet('" + this._functionid + "')", {
           expand: 'ToInterfaces'
         });
-
-        var oInterfaceSmartForm = this.byId("idInterfaceSmartForm");
 
         // if (this._functionidtmp !== null && this._functionidtmp !== this._functionid) {
         //   if (oInterfaceSmartForm.getEditable()) {
@@ -162,9 +177,11 @@ sap.ui.define([
         //   oInterfaceSmartForm.setVisible(false);
         //   oInterfaceSmartForm.setEditable(false);
         // }
+        // this._functionidtmp = this._functionid;
 
-        this._functionidtmp = this._functionid;
+        // if (!oInterfaceSmartForm.getEditable()) {
         oInterfaceSmartForm.bindElement("/FunctionSet('" + this._functionid + "')" + "/ToInterfaces");
+        // }
       },
 
       onDelete: function (oEvent) {
@@ -265,13 +282,94 @@ sap.ui.define([
         oSmartForm.setVisible(true);
         oSmartForm.setEditable(true);
         oSmartForm.setProperty("title", "Copy Function");
+      },
 
+      onUpdateFinished: function (oEvent) {
+        var count = oEvent.getParameter("total");
+        var oScrollContainer = this.getView().byId("idScrollContainer"),
+          oTitle = this.getView().byId("idTabTitle");
+        oTitle.setProperty("text", "Interfaces (" + count + ")");
+        switch (count) {
+          case 0:
+            oScrollContainer.setProperty("height", "100px");
+            break;
+          case 1:
+            oScrollContainer.setProperty("height", "100px");
+            break;
+          case 2:
+            oScrollContainer.setProperty("height", "150px");
+            break;
+          case 3:
+            oScrollContainer.setProperty("height", "170px");
+            break;
+          default:
+            oScrollContainer.setProperty("height", "215px");
+            break;
+        }
+      },
+
+      showInterfaceDetails: function (sPath, bEditable) {
+        this.getView().byId("idSFPanel").setVisible(true);
+        var oSmartForm = this.getView().byId("idInterfaceSmartForm");
+
+        oSmartForm.setVisible(true);
+        oSmartForm.setEditable(bEditable);
+        if (oSmartForm.getProperty("editable")) {
+          oSmartForm.setProperty("title", "Change Interface");
+        } else {
+          oSmartForm.setProperty("title", "Interface");
+        }
+        oSmartForm.bindElement(sPath);
+        oSmartForm.getModel().setDefaultBindingMode("TwoWay");
+        /* Get selected Interface entity*/
+        this._interface = this.getView().getModel().getData(sPath);
+      },
+
+      onEdit: function (oEvent) {
+        this._sPath = oEvent.getSource().getBindingContext().getPath();
+        var bChanged = false;
+
+        if (this._interface !== null && this.byId("idInterfaceSmartForm").getEditable()) {
+          if (this._interface.InterfaceID === oEvent.getSource().getBindingContext().getProperty("InterfaceID")) {
+            MessageToast.show("Interface '" + this._interface.InterfaceID + "' is already being edited.");
+            return;
+          }
+          bChanged = this._checkDataChanged(this._fnCheckOnSwitchInterface);
+        }
+
+        if (!bChanged) {
+          this.showInterfaceDetails(this._sPath, true);
+          delete this._sPath;
+        } else {
+          this._bEditable = true;
+        }
+      },
+
+      onTitlePress: function (oEvent) {
+        this._sPath = oEvent.getSource().getBindingContext().getPath();
+        var bChanged = false;
+
+        if (this._interface !== null && this.byId("idInterfaceSmartForm").getEditable()) {
+          if (this._interface.InterfaceID === oEvent.getSource().getBindingContext().getProperty("InterfaceID")) {
+            MessageToast.show("Interface '" + this._interface.InterfaceID + "' is already being edited.");
+            return;
+          }
+          bChanged = this._checkDataChanged(this._fnCheckOnSwitchInterface);
+        }
+
+        if (!bChanged) {
+          this.showInterfaceDetails(this._sPath, false);
+          delete this._sPath;
+        } else {
+          this._bEditable = false;
+        }
       },
 
       onSave: function (oEvent) {
         var oSmartForm = this.getView().byId("idInterfaceSmartForm");
 
         if (!this._bCreateMode) {
+          //Change Mode
           var oDataModel = oSmartForm.getModel(),
             sBindingPath = oSmartForm.getBindingContext().getPath();
           if (this._interface !== oDataModel.getData(sBindingPath)) {
@@ -296,15 +394,13 @@ sap.ui.define([
             MessageToast.show("Interface is unchanged");
           }
         } else {
+          //Create Mode
           this.getView().setBusy(true);
           this.getView().byId("idInterfaceSmartForm").getModel().submitChanges({
-            // groupId: "newFunction",
             success: function (oData) {
               this.getView().setBusy(false);
               this.getView().byId("idInterfaceSmartForm").setEditable(false);
-              // this.toggleFooter();
               MessageToast.show("Function created successfully.");
-
               this._bCreateMode = null;
             }.bind(this),
             error: function (oError) {
@@ -321,18 +417,102 @@ sap.ui.define([
       onCancel: function (oEvent) {
         var oSmartForm = this.getView().byId("idInterfaceSmartForm");
         if (this._bCreateMode) {
-          this.getView().byId("idSFPanel").setVisible(false);
           oSmartForm.getModel().deleteCreatedEntry(oSmartForm.getBindingContext());
           oSmartForm.setBindingContext(null);
           oSmartForm.setVisible(false);
+          this.getView().byId("idSFPanel").setVisible(false);
           this._bCreateMode = false;
         } else {
           oSmartForm.getModel().resetChanges();
         }
         oSmartForm.setEditable(false);
-        oSmartForm.setVisible(false);
-        this.getView().byId("idSFPanel").setVisible(false);
+        // oSmartForm.setVisible(false);
+        // this.getView().byId("idSFPanel").setVisible(false);
         this.toggleFooter();
+      },
+
+      onSettingsPress: function () {
+        // creates requested dialog if not yet created
+        if (!this._oDialogs) {
+          Fragment.load({
+            name: "zlhslc.view.fragment.InterfaceViewSettingsDialog",
+            controller: this
+          }).then(function (oDialog) {
+            this._oDialogs = oDialog;
+            this.getView().addDependent(this._oDialogs);
+            // opens the dialog
+            this._oDialogs.open();
+          }.bind(this));
+        } else {
+          // opens the requested dialog
+          this._oDialogs.open();
+        }
+      },
+
+      handleConfirm: function (oEvent) {
+        this.performSortGroup(oEvent);
+        this.performFilter(oEvent);
+      },
+
+      performFilter: function (oEvent) {
+        var oParams = oEvent.getParameters(),
+          oTable = this.getView().byId("idInterfaceTable"),
+          oBinding = oTable.getBinding("items"),
+          aFilters = [];
+
+        if (oParams.filterItems) {
+          oParams.filterItems.forEach(function (oItem) {
+            var aSplit = oItem.getKey().split("___"),
+              sPath = aSplit[0],
+              sOperator = aSplit[1],
+              sValue1 = aSplit[2],
+              sValue2 = aSplit[3],
+              oFilter = new Filter(sPath, sOperator, sValue1, sValue2);
+            aFilters.push(oFilter);
+          });
+        }
+        oBinding.filter(aFilters);
+        this.byId("idFilterLabel").setText(oParams.filterString);
+      },
+
+      performSortGroup: function (oEvent) {
+        var oParams = oEvent.getParameters(),
+          oTable = this.getView().byId("idInterfaceTable"),
+          oBinding = oTable.getBinding("items"),
+          sPath,
+          aSorters = [],
+          aGroups = [];
+        aSorters.push(new Sorter(oParams.sortItem.getKey(), oParams.sortDescending, null));
+
+        if (oParams.groupItem) {
+          sPath = oParams.groupItem.getKey();
+          aGroups.push(new Sorter(sPath, oParams.groupDescending,
+            function (oContext) {
+              var name = oContext.getProperty(sPath);
+              return {
+                key: name,
+                text: name
+              };
+            }
+          ));
+        }
+        aGroups = aGroups.concat(aSorters);
+        oBinding.sort(aGroups);
+      },
+
+      onFilterPage: function (oEvent) {
+        var aValues = [];
+        var aNewItems = [];
+        oEvent.getParameters().parentFilterItem.getItems().forEach(function (oItem, i) {
+          if (!aValues.includes(oItem.getKey())) {
+            aNewItems.push(oItem);
+          }
+          aValues.push(oItem.getKey());
+        });
+        oEvent.getParameters().parentFilterItem.removeAllItems();
+        aNewItems.forEach(function (oItem, i) {
+          oEvent.getParameters().parentFilterItem.addItem(oItem);
+        });
       },
 
       getPage: function () {
@@ -381,29 +561,36 @@ sap.ui.define([
         this.oRouter.navTo("master", {
           layout: sNextLayout
         });
-      },
-      onUpdateFinished: function (oEvent) {
-        var count = oEvent.getParameter("total");
-        var oScrollContainer = this.getView().byId("idScrollContainer"),
-          oTitle = this.getView().byId("idTabTitle");
-        oTitle.setProperty("text", "Interfaces (" + count + ")");
-        switch (count) {
-          case 0:
-            oScrollContainer.setProperty("height", "100px");
-            break;
-          case 1:
-            oScrollContainer.setProperty("height", "100px");
-            break;
-          case 2:
-            oScrollContainer.setProperty("height", "150px");
-            break;
-          case 3:
-            oScrollContainer.setProperty("height", "170px");
-            break;
-          default:
-            oScrollContainer.setProperty("height", "215px");
-            break;
-        }
       }
+
+      // onSelectionChange: function (oEvent) {
+      //   var interfaceid = oEvent.getSource().getSelectedItem().getCells()[0].getProperty("title"),
+      //     sPath = "/InterfaceSet(FunctionID='" + this._functionid + "',InterfaceID='" + interfaceid + "')";
+
+      //   this.getView().byId("idSFPanel").setVisible(true);
+
+      //   var oSmartForm = this.getView().byId("idInterfaceSmartForm");
+      //   oSmartForm.bindElement(sPath);
+      //   oSmartForm.getModel().setDefaultBindingMode("TwoWay");
+      //   oSmartForm.setVisible(true);
+      //   if (oSmartForm.getProperty("editable")) {
+      //     oSmartForm.setProperty("title", "Change Interface");
+      //   } else {
+      //     oSmartForm.setProperty("title", "Interface");
+      //   }
+
+      //   /* Get selected Interface entity*/
+      //   this._interface = this.getView().getModel().getData(sPath);
+      // }
+
+      // onSort: function () {
+      //   this._bDescendingSort = !this._bDescendingSort;
+      //   var oView = this.getView(),
+      //     oTable = oView.byId("idInterfaceTable"),
+      //     oBinding = oTable.getBinding("items"),
+      //     oSorter = new Sorter("InterfaceID", this._bDescendingSort);
+
+      //   oBinding.sort(oSorter);
+      // }
     });
   });

@@ -1,0 +1,98 @@
+<core:FragmentDefinition
+	xmlns="sap.m"
+	xmlns:core="sap.ui.core">
+	<ViewSettingsDialog confirm="handleConfirmField" filterDetailPageOpened=".onFilterPage">
+        <sortItems>
+			<ViewSettingsItem text="Parent Segment" key="Segment" selected="true" />
+			<ViewSettingsItem text="Segment Field" key="FieldName" />
+			<ViewSettingsItem text="Counter" key="Counter" />
+			<ViewSettingsItem text="Column" key="ColumnNo" />
+			<ViewSettingsItem text="Screen Field" key="ScreenSelection" />
+			<ViewSettingsItem text="Reference Table" key="ReferenceTable" />
+			<ViewSettingsItem text="Reference Field" key="ReferenceField" />
+			<ViewSettingsItem text="Field Label" key="FieldLabel" />
+			<ViewSettingsItem text="Field Format" key="FieldFormat" />
+			<ViewSettingsItem text="Offset" key="FieldOffset" />
+			<ViewSettingsItem text="Length" key="FieldLength" />
+			<ViewSettingsItem text="Segment field" key="SegmentFilterFieldName" />
+			<ViewSettingsItem text="Field Value" key="SegmentFilterFieldValue" />
+		</sortItems>
+		<groupItems>
+			<ViewSettingsItem text="Parent Segment" key="Segment" />
+			<ViewSettingsItem text="Segment Field" key="FieldName" />
+			<ViewSettingsItem text="Counter" key="Counter" />
+			<ViewSettingsItem text="Column" key="ColumnNo" />
+			<ViewSettingsItem text="Screen Field" key="ScreenSelection" />
+			<ViewSettingsItem text="Reference Table" key="ReferenceTable" />
+			<ViewSettingsItem text="Reference Field" key="ReferenceField" />
+			<ViewSettingsItem text="Field Label" key="FieldLabel" />
+			<ViewSettingsItem text="Field Format" key="FieldFormat" />
+			<ViewSettingsItem text="Offset" key="FieldOffset" />
+			<ViewSettingsItem text="Length" key="FieldLength" />
+			<ViewSettingsItem text="Segment field" key="SegmentFilterFieldName" />
+			<ViewSettingsItem text="Field Value" key="SegmentFilterFieldValue" />
+		</groupItems>
+		<filterItems>
+			<ViewSettingsFilterItem text="Parent Segment" key="Segment" items="{ToFields}" >
+				<items>
+					<ViewSettingsItem text="{Segment}" key="Segment___EQ___{Segment}___X"  />
+				</items>
+			</ViewSettingsFilterItem>
+			<ViewSettingsFilterItem text="Segment Field" key="FieldName" items="{ToFields}"  >
+				<items>
+					<ViewSettingsItem text="{FieldName}" key="FieldName___EQ___{FieldName}___X" />
+				</items>
+			</ViewSettingsFilterItem>
+			<ViewSettingsFilterItem text="Counter" key="Counter" items="{ToFields}" >
+				<items>
+					<ViewSettingsItem text="{Counter}" key="Counter___EQ___{Counter}___X" />
+				</items>
+			</ViewSettingsFilterItem>
+            <ViewSettingsFilterItem text="Column" key="ColumnNo" items="{ToFields}" >
+				<items>
+					<ViewSettingsItem text="{ColumnNo}" key="ColumnNo___EQ___{ColumnNo}___X" />
+				</items>
+			</ViewSettingsFilterItem>
+			<ViewSettingsFilterItem text="Screen Field" key="ScreenSelection" items="{ToFields}" >
+				<items>
+					<ViewSettingsItem text="{ScreenSelection}" key="ScreenSelection___EQ___{ScreenSelection}___X" />
+				</items>
+			</ViewSettingsFilterItem>
+			<ViewSettingsFilterItem text="Reference Table" key="ReferenceTable" items="{ToFields}" >
+				<items>
+					<ViewSettingsItem text="{ReferenceTable}" key="ReferenceTable___EQ___{ReferenceTable}___X" />
+				</items>
+			</ViewSettingsFilterItem>
+			<ViewSettingsFilterItem text="Reference Field" key="ReferenceField" items="{ToFields}" >
+				<items>
+					<ViewSettingsItem text="{ReferenceField}" key="ReferenceField___EQ___{ReferenceField}___X" />
+				</items>
+			</ViewSettingsFilterItem>
+			<ViewSettingsFilterItem text="Field Format" key="FieldFormat" items="{ToFields}" >
+				<items>
+					<ViewSettingsItem text="{FieldFormat}" key="FieldFormat___EQ___{FieldFormat}___X" />
+				</items>
+			</ViewSettingsFilterItem>
+			<ViewSettingsFilterItem text="Offset" key="FieldOffset" items="{ToFields}" >
+				<items>
+					<ViewSettingsItem text="{FieldOffset}" key="FieldOffset___EQ___{FieldOffset}___X" />
+				</items>
+			</ViewSettingsFilterItem>
+			<ViewSettingsFilterItem text="Length" key="FieldLength" items="{ToFields}" >
+				<items>
+					<ViewSettingsItem text="{FieldLength}" key="FieldLength___EQ___{FieldLength}___X" />
+				</items>
+			</ViewSettingsFilterItem>
+			<ViewSettingsFilterItem text="Segment field" key="SegmentFilterFieldName" items="{ToFields}" >
+				<items>
+					<ViewSettingsItem text="{SegmentFilterFieldName}" key="SegmentFilterFieldName___EQ___{SegmentFilterFieldName}___X" />
+				</items>
+			</ViewSettingsFilterItem>
+			<ViewSettingsFilterItem text="Field Value" key="SegmentFilterFieldValue" items="{ToFields}" >
+				<items>
+					<ViewSettingsItem text="{SegmentFilterFieldValue}" key="SegmentFilterFieldValue___EQ___{SegmentFilterFieldValue}___X" />
+				</items>
+			</ViewSettingsFilterItem>
+		</filterItems>
+	</ViewSettingsDialog>
+</core:FragmentDefinition>

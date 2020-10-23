@@ -135,29 +135,28 @@
                 <uxap:subSections>
                     <uxap:ObjectPageSubSection id="idSegmentList"
                         title="Segments">
-                        <VBox fitContainer="false" >
+                        <VBox fitContainer="false">
                             <OverflowToolbar class="sapFDynamicPageAlignContent">
+                                <Button type="Default"
+                                    text="New Segment"
+                                    icon="sap-icon://create"
+                                    tooltip="Create Segment"
+                                    press=".onCreateSegment" />
+                                <Title id="idSegTitle"
+                                    text=""
+                                    titleStyle="H5" />
                                 <ToolbarSpacer />
+                                <Text id="idSegFilterLabel" />
                                 <SearchField search=".onSearchSegments"
                                     width="17.5rem" />
-                                <OverflowToolbarButton icon="sap-icon://sort"
-                                    text="Sort"
-                                    tooltip="Sort Segment"
+                                <OverflowToolbarButton icon="sap-icon://action-settings"
+                                    text="Settings"
+                                    tooltip="View Settings"
                                     type="Transparent"
-                                    press=".onSortSegments" />
-                                <Button type="Default"
-						            text="New Segment"
-						            icon="sap-icon://create"
-                                    tooltip="Create Segment"
-						            press=".onCreateSegment" />
-                                <!-- <OverflowToolbarButton icon="sap-icon://filter" text="Filter" type="Transparent" press=".onFilter" /> -->
-                                <!-- <OverflowToolbarButton icon="sap-icon://add"
-                                    text="Create"
-                                    tooltip="Create Segment"
-                                    type="Transparent"
-                                    press=".onCreateSegment" /> -->
+                                    press=".onSegSettingsPress" />
                             </OverflowToolbar>
                             <ScrollContainer id="idScrollContainerSeg"
+                                class="sapUiTinyMarginBottom"
                                 horizontal="false"
                                 vertical="true">
                                 <Table id="idSegmentsTable"
@@ -167,6 +166,9 @@
                                     width="auto"
                                     items="{
                                         path: 'ToSegments',
+                                        parameters: {
+								            operationMode: 'Client'
+							            },
 							            sorter: {
 								            path: 'SegmentName'
 							            } 
@@ -194,7 +196,8 @@
                                     </columns>
                                     <items>
                                         <ColumnListItem type="Active"
-                                            press="onSelectSegment" selected="true">
+                                            press="onSelectSegment"
+                                            selected="true">
                                             <cells>
                                                 <ObjectIdentifier title="{SegmentName}" />
                                                 <Text text="{SegmentLevel}" />
@@ -202,6 +205,10 @@
                                                 <Text text="{ParentFieldName}" />
                                                 <OverflowToolbar class="sapFDynamicPageAlignContent"
                                                     style="Clear">
+                                                    <OverflowToolbarButton icon="sap-icon://edit"
+                                                        text="Edit"
+                                                        type="Transparent"
+                                                        press=".onEditSeg" />
                                                     <OverflowToolbarButton icon="sap-icon://duplicate"
                                                         text="Clone"
                                                         type="Transparent"
@@ -216,36 +223,40 @@
                                     </items>
                                 </Table>
                             </ScrollContainer>
+                            <Panel id="idSegPanel"
+                                backgroundDesign="Solid"
+                                class="sapUiTinyMarginTop"
+                                visible="false">
+                                <smartForm:SmartForm id="idSegmentSmartForm"
+                                    editTogglable="true"
+                                    class="editableForm sapUiMediumMarginBottom"
+                                    editable="false"
+                                    entityType="ZLHSL_TIMCONFIG_SRV.IDocSegment"
+                                    editToggled=".onEditToggledSeg"
+                                    visible="false"
+                                    checked=".onChecked"
+                                    validationError=".onValidationError"
+                                    validationSuccess=".onValidationSuccess">
 
-                            <smartForm:SmartForm id="idSegmentSmartForm"
-                                editTogglable="true"
-                                class="editableForm sapUiMediumMarginBottom"
-                                editable="false"
-                                entityType="ZLHSL_TIMCONFIG_SRV.IDocSegment"
-                                editToggled=".onEditToggledSeg"
-                                visible="false"
-                                checked=".onChecked"
-                                validationError=".onValidationError"
-                                validationSuccess=".onValidationSuccess">
-
-                                <smartForm:Group id="idSegSFGroup1">
-                                    <smartForm:GroupElement label="Segment">
-                                        <smartField:SmartField value="{SegmentName}" />
-                                    </smartForm:GroupElement>
-                                    <smartForm:GroupElement label="Segment Level">
-                                        <smartField:SmartField value="{SegmentLevel}" />
-                                    </smartForm:GroupElement>
-                                </smartForm:Group>
-                                <smartForm:Group id="idSegSFGroup2">
-                                    <smartForm:GroupElement label="Parent Segment">
-                                        <smartField:SmartField value="{ParentSegment}" />
-                                    </smartForm:GroupElement>
-                                    <smartForm:GroupElement label="Parent Field">
-                                        <smartField:SmartField value="{ParentFieldName}" />
-                                    </smartForm:GroupElement>
-                                </smartForm:Group>
-                            </smartForm:SmartForm>
-                            <Toolbar width="100%" height="3px" design="Solid"/>
+                                    <smartForm:Group id="idSegSFGroup1">
+                                        <smartForm:GroupElement label="Segment">
+                                            <smartField:SmartField value="{SegmentName}" />
+                                        </smartForm:GroupElement>
+                                        <smartForm:GroupElement label="Segment Level">
+                                            <smartField:SmartField value="{SegmentLevel}" />
+                                        </smartForm:GroupElement>
+                                    </smartForm:Group>
+                                    <smartForm:Group id="idSegSFGroup2">
+                                        <smartForm:GroupElement label="Parent Segment">
+                                            <smartField:SmartField value="{ParentSegment}" />
+                                        </smartForm:GroupElement>
+                                        <smartForm:GroupElement label="Parent Field">
+                                            <smartField:SmartField value="{ParentFieldName}" />
+                                        </smartForm:GroupElement>
+                                    </smartForm:Group>
+                                </smartForm:SmartForm>
+                            </Panel>
+                            <!-- <Toolbar width="100%" height="3px" design="Solid"/> -->
                         </VBox>
                     </uxap:ObjectPageSubSection>
                 </uxap:subSections>
@@ -260,35 +271,33 @@
                         titleUppercase="false">
                         <VBox>
                             <OverflowToolbar class="sapFDynamicPageAlignContent">
+                                <Button type="Default"
+                                    text="New Field"
+                                    icon="sap-icon://create"
+                                    tooltip="Create Field"
+                                    press=".onCreateField" />
+                                <Title id="idFieldTitle"
+                                    text=""
+                                    titleStyle="H5" />
                                 <ToolbarSpacer />
+                                <Text id="idFieldFilterLabel" />
                                 <SearchField search=".onSearchFields"
                                     width="17.5rem" />
-                                <OverflowToolbarButton icon="sap-icon://sort"
-                                    text="Sort"
-                                    tooltip="Sort Field"
+                                <OverflowToolbarButton icon="sap-icon://action-settings"
+                                    text="Settings"
+                                    tooltip="View Settings"
                                     type="Transparent"
-                                    press=".onSortFields" />
-                                <Button type="Default"
-						            text="New Field"
-						            icon="sap-icon://create"
-                                    tooltip="Create Field"
-						            press=".onCreateField" />
-                                <!-- <OverflowToolbarButton icon="sap-icon://filter" text="Filter" type="Transparent" press=".onFilter" /> -->
-                                <!-- <OverflowToolbarButton icon="sap-icon://add"
-                                    text="Create"
-                                    tooltip="Create Field"
-                                    type="Transparent"
-                                    press=".onCreateField" /> -->
+                                    press=".onFieldSettingsPress" />
                             </OverflowToolbar>
                             <ScrollContainer id="idScrollContainerField"
                                 horizontal="false"
                                 height="auto"
                                 vertical="true">
-                                <Table id="idFieldsTable" 
-                                    sticky="ColumnHeaders" 
+                                <Table id="idFieldsTable"
+                                    sticky="ColumnHeaders"
                                     inset="false"
                                     class="sapFDynamicPageAlignContent"
-                                    width="auto"
+                                    width="auto" rememberSelections="true"
                                     items="{
                                         path: 'ToFields',
                                         parameters: {
@@ -297,7 +306,8 @@
 							            sorter: {
 								            path: 'FieldName'
 							            } 
-                                    }">
+                                    }"
+                                    updateFinished="onFieldUpdateFinished">
                                     <columns>
                                         <Column >
                                             <Text text="Segment" />
@@ -313,8 +323,7 @@
                                             demandPopin="false">
                                             <Text text="Column Seq." />
                                         </Column>
-                                        <!-- <Column minScreenWidth="Tablet"
-                                            demandPopin="false">
+                                        <!-- <Column minScreenWidth="Tablet" demandPopin="false">
                                             <Text text="Screen Field" />
                                         </Column> -->
                                         <Column minScreenWidth="Desktop"
@@ -329,24 +338,19 @@
                                             demandPopin="false">
                                             <Text text="Field Label" />
                                         </Column>
-                                        <!-- <Column minScreenWidth="Desktop"
-                                            demandPopin="false">
+                                        <!-- <Column minScreenWidth="Desktop" demandPopin="false">
                                             <Text text="Field Format" />
                                         </Column>
-                                        <Column minScreenWidth="Desktop"
-                                            demandPopin="false">
+                                        <Column minScreenWidth="Desktop" demandPopin="false">
                                             <Text text="Field Offset" />
                                         </Column>
-                                        <Column minScreenWidth="Desktop"
-                                            demandPopin="false">
+                                        <Column minScreenWidth="Desktop" demandPopin="false">
                                             <Text text="Field Length" />
                                         </Column>
-                                        <Column minScreenWidth="Desktop"
-                                            demandPopin="false">
+                                        <Column minScreenWidth="Desktop" demandPopin="false">
                                             <Text text="Segment Field" />
                                         </Column>
-                                        <Column minScreenWidth="Desktop"
-                                            demandPopin="false">
+                                        <Column minScreenWidth="Desktop" demandPopin="false">
                                             <Text text="Field Value" />
                                         </Column> -->
                                         <Column minScreenWidth="Tablet">
@@ -354,7 +358,7 @@
                                         </Column>
                                     </columns>
                                     <items>
-                                        <ColumnListItem type="Active" 
+                                        <ColumnListItem type="Active"
                                             press="onSelectField">
                                             <cells>
                                                 <ObjectIdentifier title="{Segment}" />
@@ -372,6 +376,10 @@
                                                 <Text text="{SegmentFilterFieldValue}" /> -->
                                                 <OverflowToolbar class="sapFDynamicPageAlignContent"
                                                     style="Clear">
+                                                    <OverflowToolbarButton icon="sap-icon://edit"
+                                                        text="Edit"
+                                                        type="Transparent"
+                                                        press=".onEditField" />
                                                     <OverflowToolbarButton icon="sap-icon://duplicate"
                                                         text="Clone"
                                                         type="Transparent"
@@ -386,60 +394,66 @@
                                     </items>
                                 </Table>
                             </ScrollContainer>
-                            <smartForm:SmartForm id="idFieldSmartForm"
-                                editTogglable="true"
-                                class="editableForm sapUiTinyMarginTop"
-                                editable="false"
-                                entityType="ZLHSL_TIMCONFIG_SRV.Fields"
-                                editToggled=".onEditToggledField"
-                                visible="false"
-                                validationError=".onValidationError"
-                                validationSuccess=".onValidationSuccess">
+                            <Panel id="idFieldPanel"
+                                backgroundDesign="Solid"
+                                class="sapUiTinyMarginTop"
+                                height="auto"
+                                visible="false">
+                                <smartForm:SmartForm id="idFieldSmartForm"
+                                    editTogglable="true"
+                                    class="editableForm sapUiTinyMarginTop"
+                                    editable="false"
+                                    entityType="ZLHSL_TIMCONFIG_SRV.Fields"
+                                    editToggled=".onEditToggledField"
+                                    visible="false"
+                                    validationError=".onValidationError"
+                                    validationSuccess=".onValidationSuccess">
 
-                                <smartForm:Group id="idFldSFGroup1">
-                                    <smartForm:GroupElement label="Parent Segment">
-                                        <smartField:SmartField value="{Segment}" />
-                                    </smartForm:GroupElement>
-                                    <smartForm:GroupElement label="Segment Field">
-                                        <smartField:SmartField value="{FieldName}" />
-                                    </smartForm:GroupElement>
-                                    <smartForm:GroupElement label="Counter">
-                                        <smartField:SmartField value="{Counter}" />
-                                    </smartForm:GroupElement>
-                                    <smartForm:GroupElement label="Column">
-                                        <smartField:SmartField value="{ColumnNo}" />
-                                    </smartForm:GroupElement>
-                                    <smartForm:GroupElement label="Screen Field">
-                                        <smartField:SmartField value="{ScreenSelection}" />
-                                    </smartForm:GroupElement>
-                                    <smartForm:GroupElement label="Reference Table">
-                                        <smartField:SmartField value="{ReferenceTable}" />
-                                    </smartForm:GroupElement>
-                                    <smartForm:GroupElement label="Reference Field Name">
-                                        <smartField:SmartField value="{ReferenceField}" />
-                                    </smartForm:GroupElement>
-                                    <smartForm:GroupElement label="Medium Label">
-                                        <smartField:SmartField value="{FieldLabel}" />
-                                    </smartForm:GroupElement>
-                                </smartForm:Group>
-                                <smartForm:Group id="idFldSFGroup2">
-                                    <smartForm:GroupElement label="Format">
-                                        <smartField:SmartField value="{FieldFormat}" />
-                                    </smartForm:GroupElement>
-                                    <smartForm:GroupElement label="Offset">
-                                        <smartField:SmartField value="{FieldOffset}" />
-                                    </smartForm:GroupElement>
-                                    <smartForm:GroupElement label="Length">
-                                        <smartField:SmartField value="{FieldLength}" />
-                                    </smartForm:GroupElement>
-                                    <smartForm:GroupElement label="Segment field">
-                                        <smartField:SmartField value="{SegmentFilterFieldName}" />
-                                    </smartForm:GroupElement>
-                                    <smartForm:GroupElement label="Field Value">
-                                        <smartField:SmartField value="{SegmentFilterFieldValue}" />
-                                    </smartForm:GroupElement>
-                                </smartForm:Group>
-                            </smartForm:SmartForm>
+                                    <smartForm:Group id="idFldSFGroup1">
+                                        <smartForm:GroupElement label="Parent Segment">
+                                            <smartField:SmartField value="{Segment}" />
+                                        </smartForm:GroupElement>
+                                        <smartForm:GroupElement label="Segment Field">
+                                            <smartField:SmartField value="{FieldName}" />
+                                        </smartForm:GroupElement>
+                                        <smartForm:GroupElement label="Counter">
+                                            <smartField:SmartField value="{Counter}" />
+                                        </smartForm:GroupElement>
+                                        <smartForm:GroupElement label="Column">
+                                            <smartField:SmartField value="{ColumnNo}" />
+                                        </smartForm:GroupElement>
+                                        <smartForm:GroupElement label="Screen Field">
+                                            <smartField:SmartField value="{ScreenSelection}" />
+                                        </smartForm:GroupElement>
+                                        <smartForm:GroupElement label="Reference Table">
+                                            <smartField:SmartField value="{ReferenceTable}" />
+                                        </smartForm:GroupElement>
+                                        <smartForm:GroupElement label="Reference Field Name">
+                                            <smartField:SmartField value="{ReferenceField}" />
+                                        </smartForm:GroupElement>
+                                        <smartForm:GroupElement label="Medium Label">
+                                            <smartField:SmartField value="{FieldLabel}" />
+                                        </smartForm:GroupElement>
+                                    </smartForm:Group>
+                                    <smartForm:Group id="idFldSFGroup2">
+                                        <smartForm:GroupElement label="Field Format">
+                                            <smartField:SmartField value="{FieldFormat}" />
+                                        </smartForm:GroupElement>
+                                        <smartForm:GroupElement label="Offset">
+                                            <smartField:SmartField value="{FieldOffset}" />
+                                        </smartForm:GroupElement>
+                                        <smartForm:GroupElement label="Length">
+                                            <smartField:SmartField value="{FieldLength}" />
+                                        </smartForm:GroupElement>
+                                        <smartForm:GroupElement label="Segment field">
+                                            <smartField:SmartField value="{SegmentFilterFieldName}" />
+                                        </smartForm:GroupElement>
+                                        <smartForm:GroupElement label="Field Value">
+                                            <smartField:SmartField value="{SegmentFilterFieldValue}" />
+                                        </smartForm:GroupElement>
+                                    </smartForm:Group>
+                                </smartForm:SmartForm>
+                            </Panel>
                         </VBox>
                     </uxap:ObjectPageSubSection>
                 </uxap:subSections>
