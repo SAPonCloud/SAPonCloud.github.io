@@ -142,7 +142,6 @@
 						editTogglable="true"
 						class="editableForm"
 						editable="false"
-						checkButton="true"
 						editToggled=".onEditToggled"
 						formatError=".onFormatError"
 						parseError=".onFormatError"
@@ -167,11 +166,6 @@
 										<smartField:Configuration controlType="checkBox" />
 									</smartField:configuration>
 								</smartField:SmartField>
-								<!-- <Switch id="idSwitch" state="{Active}" customTextOn="Yes" customTextOff="No" enabled="false">
-								<layoutData>
-									<FlexItemData growFactor="0" />
-								</layoutData>
-							</Switch> -->
 							</smartForm:GroupElement>
 						</smartForm:Group>
 						<smartForm:Group id="idSFGroup2">

@@ -85,10 +85,10 @@
 				<OverflowToolbar class="sapFDynamicPageAlignContent">
 					<Title id="idTabTitle"
 						text="Interfaces"
-						titleStyle="H2" />
+						titleStyle="H3" />
 					<!-- <Title text="Interfaces ({interfaces>/length})" level="H2"/> -->
 					<ToolbarSpacer />
-					<Text id="idFilterLabel"/>
+					<Text id="idFilterLabel" />
 					<SearchField search=".onSearch"
 						liveChange=".onSearch"
 						placeholder="Search Interfaces"
@@ -106,7 +106,7 @@
 				</OverflowToolbar>
 				<ScrollContainer id="idScrollContainer"
 					class="sapUiSmallMarginBottom"
-					height="215px"
+					height="auto"
 					horizontal="false"
 					vertical="true">
 					<Table id="idInterfaceTable"
@@ -242,7 +242,13 @@
 								<smartField:SmartField value="{InterfaceType}" />
 							</smartForm:GroupElement>
 							<smartForm:GroupElement label="Direction">
-								<smartField:SmartField value="{Direction}" />
+								<smartField:SmartField value="{path: 'Direction', 
+									formatter: '.formatter.directionText'}" />
+									<!-- <smartField:configuration>
+										<smartField:Configuration controlType="dropDownList" 
+											displayBehaviour="descriptionAndId" />
+									</smartField:configuration> 
+								</smartField:SmartField> -->
 							</smartForm:GroupElement>
 							<smartForm:GroupElement label="Active">
 								<smartField:SmartField value="{InterfaceActive}">

@@ -263,7 +263,9 @@ sap.ui.define([
             var oSmartFormField = this.byId("idFieldSmartForm"),
                 oDataModel = this.getView().getModel(),
                 sPath = oEvent.getSource().getParent().getParent().getBindingContextPath(),
-                oData = oDataModel.getData(sPath);
+                oData = oDataModel.getData(sPath),
+                sJSONStr = JSON.stringify(oData);
+            oData = JSON.parse(sJSONStr);
 
             delete oData.__metadata;
             oData.Segment = oData.Segment + "_COPY";
@@ -326,9 +328,13 @@ sap.ui.define([
 
         onSearchFields: function (oEvent) {
             var oTableSearchState = [],
-                sQuery = oEvent.getParameter("query");
+                sQuery = oEvent.getParameter("query"),
+                sNewValue = oEvent.getParameter("newValue");
 
-            if (sQuery && sQuery.length > 0) {
+            if ((sQuery && sQuery.length > 0) || (sNewValue)) {
+                if (oEvent.getParameter("newValue")) {
+                    sQuery = sNewValue;
+                }
                 oTableSearchState = [
                     new Filter("Segment", FilterOperator.Contains, sQuery),
                     new Filter("FieldName", FilterOperator.Contains, sQuery),
@@ -498,8 +504,6 @@ sap.ui.define([
             oSmartForm.setEditable(true);
             oSmartForm.setEditTogglable(false);
             oSmartForm.setProperty("title", "Create IDoc Segment");
-
-            // this.scrollToElement(oSmartForm, "idSegmentSmartForm");
         },
 
         onDeleteSegment: function (oEvent) {
@@ -569,7 +573,9 @@ sap.ui.define([
             var oSmartForm = this.byId("idSegmentSmartForm"),
                 oDataModel = this.getView().getModel(),
                 sPath = oEvent.getSource().getParent().getParent().getBindingContextPath(),
-                oData = oDataModel.getData(sPath);
+                oData = oDataModel.getData(sPath),
+                sJSONStr = JSON.stringify(oData);
+            oData = JSON.parse(sJSONStr);
 
             delete oData.__metadata;
             oData.SegmentName = oData.SegmentName + "_COPY";
@@ -601,9 +607,13 @@ sap.ui.define([
 
         onSearchSegments: function (oEvent) {
             var oTableSearchState = [],
-                sQuery = oEvent.getParameter("query");
+                sQuery = oEvent.getParameter("query"),
+                sNewValue = oEvent.getParameter("newValue");
 
-            if (sQuery && sQuery.length > 0) {
+            if ((sQuery && sQuery.length > 0) || (sNewValue)) {
+                if (oEvent.getParameter("newValue")) {
+                    sQuery = sNewValue;
+                }
                 oTableSearchState = [
                     new Filter("SegmentName", FilterOperator.Contains, sQuery),
                     new Filter("ParentSegment", FilterOperator.Contains, sQuery),

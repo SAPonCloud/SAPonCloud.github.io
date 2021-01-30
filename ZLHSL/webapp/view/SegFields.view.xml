@@ -147,7 +147,7 @@
                                     titleStyle="H5" />
                                 <ToolbarSpacer />
                                 <Text id="idSegFilterLabel" />
-                                <SearchField search=".onSearchSegments"
+                                <SearchField search=".onSearchSegments" liveChange=".onSearchSegments"
                                     width="17.5rem" />
                                 <OverflowToolbarButton icon="sap-icon://action-settings"
                                     text="Settings"
@@ -281,7 +281,7 @@
                                     titleStyle="H5" />
                                 <ToolbarSpacer />
                                 <Text id="idFieldFilterLabel" />
-                                <SearchField search=".onSearchFields"
+                                <SearchField search=".onSearchFields" liveChange=".onSearchFields"
                                     width="17.5rem" />
                                 <OverflowToolbarButton icon="sap-icon://action-settings"
                                     text="Settings"
@@ -309,13 +309,13 @@
                                     }"
                                     updateFinished="onFieldUpdateFinished">
                                     <columns>
-                                        <Column >
+                                        <Column width="240px">
                                             <Text text="Segment" />
                                         </Column>
                                         <Column >
                                             <Text text="Segment Field" />
                                         </Column>
-                                        <Column minScreenWidth="Tablet"
+                                        <Column minScreenWidth="Tablet" width="70px" hAlign="End"
                                             demandPopin="false">
                                             <Text text="Counter" />
                                         </Column>
@@ -353,7 +353,7 @@
                                         <Column minScreenWidth="Desktop" demandPopin="false">
                                             <Text text="Field Value" />
                                         </Column> -->
-                                        <Column minScreenWidth="Tablet">
+                                        <Column minScreenWidth="Tablet" hAlign="Center">
                                             <Text text="Actions" />
                                         </Column>
                                     </columns>
@@ -405,7 +405,7 @@
                                     editable="false"
                                     entityType="ZLHSL_TIMCONFIG_SRV.Fields"
                                     editToggled=".onEditToggledField"
-                                    visible="false"
+                                    visible="false" title=""
                                     validationError=".onValidationError"
                                     validationSuccess=".onValidationSuccess">
 

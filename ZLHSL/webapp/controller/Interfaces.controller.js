@@ -243,6 +243,8 @@ sap.ui.define([
         oSmartForm.setVisible(true);
         oSmartForm.setEditable(true);
         oSmartForm.setProperty("title", "Create Function");
+        this.setTableHeight();
+        this.scrollToElement(oSmartForm, "idInterfaceSmartForm");
       },
 
       onClone: function (oEvent) {
@@ -252,7 +254,9 @@ sap.ui.define([
         var oSmartForm = this.byId("idInterfaceSmartForm"),
           oDataModel = this.getView().getModel(),
           sPath = oEvent.getSource().getParent().getParent().getBindingContextPath(),
-          oData = oDataModel.getData(sPath);
+          oData = oDataModel.getData(sPath),
+          sJSONStr = JSON.stringify(oData);
+        oData = JSON.parse(sJSONStr);
 
         delete oData.ToSegments;
         delete oData.ToFields;
@@ -282,34 +286,40 @@ sap.ui.define([
         oSmartForm.setVisible(true);
         oSmartForm.setEditable(true);
         oSmartForm.setProperty("title", "Copy Function");
+        this.setTableHeight();
+        this.scrollToElement(oSmartForm, "idInterfaceSmartForm");
       },
 
       onUpdateFinished: function (oEvent) {
-        var count = oEvent.getParameter("total");
+        var iCount = oEvent.getParameter("total");
         var oScrollContainer = this.getView().byId("idScrollContainer"),
           oTitle = this.getView().byId("idTabTitle");
-        oTitle.setProperty("text", "Interfaces (" + count + ")");
-        switch (count) {
-          case 0:
-            oScrollContainer.setProperty("height", "100px");
-            break;
-          case 1:
-            oScrollContainer.setProperty("height", "100px");
-            break;
-          case 2:
-            oScrollContainer.setProperty("height", "150px");
-            break;
-          case 3:
-            oScrollContainer.setProperty("height", "170px");
-            break;
-          default:
-            oScrollContainer.setProperty("height", "215px");
-            break;
-        }
+        oTitle.setProperty("text", "Interfaces (" + iCount + ")");
+
+        this._iInterfaceCount = iCount;
+        this.setTableHeight();
+        // switch (iCount) {
+        //   case 0:
+        //     oScrollContainer.setProperty("height", "100px");
+        //     break;
+        //   case 1:
+        //     oScrollContainer.setProperty("height", "100px");
+        //     break;
+        //   case 2:
+        //     oScrollContainer.setProperty("height", "150px");
+        //     break;
+        //   case 3:
+        //     oScrollContainer.setProperty("height", "170px");
+        //     break;
+        //   default:
+        //     oScrollContainer.setProperty("height", "215px");
+        //     break;
+        // }
       },
 
       showInterfaceDetails: function (sPath, bEditable) {
         this.getView().byId("idSFPanel").setVisible(true);
+        this.setTableHeight();
         var oSmartForm = this.getView().byId("idInterfaceSmartForm");
 
         oSmartForm.setVisible(true);
@@ -323,6 +333,7 @@ sap.ui.define([
         oSmartForm.getModel().setDefaultBindingMode("TwoWay");
         /* Get selected Interface entity*/
         this._interface = this.getView().getModel().getData(sPath);
+        this.scrollToElement(oSmartForm, "idInterfaceSmartForm");
       },
 
       onEdit: function (oEvent) {
@@ -429,6 +440,7 @@ sap.ui.define([
         // oSmartForm.setVisible(false);
         // this.getView().byId("idSFPanel").setVisible(false);
         this.toggleFooter();
+        this.setTableHeight();
       },
 
       onSettingsPress: function () {
@@ -515,6 +527,14 @@ sap.ui.define([
         });
       },
 
+      setTableHeight: function () {
+        if (this._iInterfaceCount > 5 && this.byId("idSFPanel").getVisible()) {
+          this.byId("idScrollContainer").setProperty("height", "210px");
+        } else {
+          this.byId("idScrollContainer").setProperty("height", "auto");
+        }
+      },
+
       getPage: function () {
         return this.byId("dynamicPageId");
       },
@@ -561,6 +581,19 @@ sap.ui.define([
         this.oRouter.navTo("master", {
           layout: sNextLayout
         });
+      },
+
+      scrollToElement: function (oControl, sElement) {
+
+        oControl.addEventDelegate({
+            "onAfterRendering": function () {
+              this.getView().byId("dynamicPageId").getScrollDelegate().scrollTo(0,
+                $("#" + this.createId(sElement)).offset().top,
+                800);
+            }
+          },
+          this
+        );
       }
 
       // onSelectionChange: function (oEvent) {

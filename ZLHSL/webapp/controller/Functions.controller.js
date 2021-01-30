@@ -64,7 +64,6 @@ sap.ui.define([
 						this.getView().addDependent(this._oDialogs);
 
 						// this._oDialogs.bindFilterItems("filterItems>/items", function (sId, oContext) {
-						// 	debugger;
 						// 	return new sap.m.ViewSettingsFilterItem({
 						// 		key: oContext.getObject().template,
 						// 		text: oContext.getObject().label,
@@ -73,7 +72,6 @@ sap.ui.define([
 						// 	});
 						// }.bind(this));
 
-						// debugger;
 						// var oFilterModel = new JSONModel();
 						// oFilterModel.setData({
 						// 	items: this._aCols
@@ -121,42 +119,6 @@ sap.ui.define([
 				return aItems;
 			},
 
-			onCreate: function (oEvent) {
-				this._bCreateMode = true;
-				this._function = null;
-
-				var oSmartForm = this.byId("idSmartForm"),
-					oDataModel = this.getView().getModel();
-				oSmartForm.unbindContext();
-				oSmartForm.getModel().setDefaultBindingMode("TwoWay");
-				oSmartForm.setBindingContext(oDataModel.createEntry("/FunctionSet", {
-					// groupId: "newFunction",
-					refreshAfterChange: true,
-					success: function (oData) {
-						debugger;
-						this._bCreateMode = null;
-						MessageToast.show("Function created successfully.");
-						// this.getView().byId("idSmartForm").setEditable(false);
-						oSmartForm.setProperty("title", "Change Function");
-						// this.toggleFooter();
-						this.getView().setBusy(false);
-					}.bind(this),
-
-					error: function (oError) {
-						MessageBox.error("Function could not be created.");
-						this.getView().setBusy(false);
-						// this._bCreateMode = null;
-					}.bind(this)
-				}));
-
-				this.getView().byId("idSFPanel").setVisible(true);
-				oSmartForm.setVisible(true);
-				oSmartForm.setEditable(true);
-				oSmartForm.setProperty("title", "Create Function");
-
-				this.setTableHeight();
-			},
-
 			onListItemPress: function (oEvent) {
 				var functionid = oEvent.getSource().getBindingContext().getProperty("FunctionID"),
 					oNextUIState;
@@ -167,7 +129,6 @@ sap.ui.define([
 						functionid: functionid
 					});
 				}.bind(this));
-				// this.getView().byId("idSmartForm").bindElement("/FunctionSet('" + functionid + "')");
 			},
 
 			onUpdateFinished: function (oEvent) {
@@ -231,11 +192,9 @@ sap.ui.define([
 					}
 				} else {
 					this.getView().setBusy(true);
-					debugger;
 					this.getView().byId("idSmartForm").getModel().submitChanges({
 						// groupId: "newFunction",
 						success: function (oData) {
-							debugger;
 							this.getView().setBusy(false);
 							this.getView().byId("idSmartForm").setEditable(false);
 							// this.toggleFooter();
@@ -244,7 +203,6 @@ sap.ui.define([
 							this._bCreateMode = null;
 						}.bind(this),
 						error: function (oError) {
-							debugger;
 							MessageBox.error("Function could not be created.");
 							this.getView().setBusy(false);
 							this._bCreateMode = null;
@@ -256,7 +214,6 @@ sap.ui.define([
 			},
 
 			onValidationError: function (oEvent) {
-				debugger;
 				MessageBox.error(oEvent.getParameter("message"));
 				this.getView().byId("idSaveBtn").setEnabled(false);
 			},
@@ -278,6 +235,7 @@ sap.ui.define([
 				}
 				oSmartForm.setEditable(false);
 				this.toggleFooter();
+				this.setTableHeight();
 			},
 
 			_fnCheckOnEditToggled: function (oAction) {
@@ -297,9 +255,9 @@ sap.ui.define([
 			},
 
 			_checkDataChanged: function (fnName) {
-				if (this._function !==
-					this.getView().byId("idSmartForm").getModel().getData(this.getView().byId("idSmartForm").getBindingContext().getPath())) {
-
+				// if (this._function !==
+				// 	this.getView().byId("idSmartForm").getModel().getData(this.getView().byId("idSmartForm").getBindingContext().getPath())) {
+				if (this.byId("idSmartForm").getModel().hasPendingChanges()) {
 					MessageBox.confirm("Function has changed. Discard Changes?", fnName.bind(this));
 					return true;
 
@@ -326,6 +284,10 @@ sap.ui.define([
 
 			onDelete: function (oEvent) {
 				this._functionid = oEvent.getSource().getParent().getParent().getAggregation("cells")[0].getProperty("title");
+				if (this._function !== null && this._function.FunctionID === this._functionid) {
+					this._bCurrentFuncDeleted = true;
+				}
+
 				this._sPath = oEvent.getSource().getParent().getParent().getBindingContextPath();
 				MessageBox.confirm("It will delete function '" +
 					this._functionid +
@@ -333,8 +295,11 @@ sap.ui.define([
 					function (oAction) {
 						if (oAction === 'OK') {
 							this.getView().setBusy(true);
-							this.getView().byId("idSmartForm").setVisible(false);;
-							this.getView().byId("idSFPanel").setVisible(false);
+							if (this._bCurrentFuncDeleted) {
+								this.getView().byId("idSmartForm").setEditable(false);
+								this.getView().byId("idSmartForm").setVisible(false);
+								this.getView().byId("idSFPanel").setVisible(false);
+							}
 							this.getView().getModel().remove(this._sPath, {
 								success: function () {
 									this.getView().setBusy(false);
@@ -342,13 +307,14 @@ sap.ui.define([
 									this._sPath = null;
 								}.bind(this),
 								error: function () {
-									debugger;
 									this.getView().setBusy(false);
 									MessageToast.show("Error occured while deleting Function '" + this._functionid);
 									this._sPath = null;
 								}.bind(this),
 								refreshAfterChange: true
-							})
+							});
+
+							this.toggleFooter();
 
 						} else {
 							MessageToast.show("Deletion cancelled.");
@@ -358,25 +324,70 @@ sap.ui.define([
 				);
 			},
 
-			onClone: function (oEvent) {
+			onCreate: function (oEvent) {
+				var oSmartForm = this.byId("idSmartForm"),
+					oDataModel = this.getView().getModel();
+				if (oSmartForm.getModel().hasPendingChanges() === true) {
+					MessageToast.show("Please save or cancel the ongoing transaction first.");
+					return;
+				}
 				this._bCreateMode = true;
 				this._function = null;
-				debugger;
-				var oSmartForm = this.byId("idSmartForm"),
-					oDataModel = this.getView().getModel(),
-					sPath = oEvent.getSource().getParent().getParent().getBindingContextPath(),
-					oData = oDataModel.getData(sPath);
-				// delete oData.ToInterfaces;
-				// delete oData.__metadata;
-
-				oData.FunctionID = oData.FunctionID + "_COPY";
 
 				oSmartForm.unbindContext();
 				oSmartForm.getModel().setDefaultBindingMode("TwoWay");
 				oSmartForm.setBindingContext(oDataModel.createEntry("/FunctionSet", {
+					// groupId: "newFunction",
+					refreshAfterChange: true,
+					success: function (oData) {
+						this._bCreateMode = null;
+						this._function = this.getView().getModel().getData(oSmartForm._getBindingContext().getPath());
+						MessageToast.show("Function created successfully.");
+						// this.getView().byId("idSmartForm").setEditable(false);
+						oSmartForm.setProperty("title", "Change Function");
+						// this.toggleFooter();
+						this.getView().setBusy(false);
+					}.bind(this),
+
+					error: function (oError) {
+						MessageBox.error("Function could not be created.");
+						this.getView().setBusy(false);
+						// this._bCreateMode = null;
+					}.bind(this)
+				}));
+
+				this.getView().byId("idSFPanel").setVisible(true);
+				oSmartForm.setVisible(true);
+				oSmartForm.setEditable(true);
+				oSmartForm.setProperty("title", "Create Function");
+
+				this.setTableHeight();
+			},
+
+			onClone: function (oEvent) {
+				var oSmartForm = this.byId("idSmartForm");
+				if (oSmartForm.getModel().hasPendingChanges() === true) {
+					MessageToast.show("Please save or cancel the ongoing transaction first.");
+					return;
+				}
+				this._bCreateMode = true;
+				this._function = null;
+				var oDataModel = this.getView().getModel(),
+					sPath = oEvent.getSource().getParent().getParent().getBindingContextPath(),
+					oData = oDataModel.getData(sPath),
+					sJSONStr = JSON.stringify(oData);
+				oData = JSON.parse(sJSONStr);
+
+				delete oData.ToInterfaces;
+				delete oData.__metadata;
+				oData.FunctionID = oData.FunctionID + "_COPY";
+
+				// oSmartForm.unbindContext();
+				oSmartForm.setBindingContext(null);
+				oSmartForm.getModel().setDefaultBindingMode("TwoWay");
+				oSmartForm.setBindingContext(oDataModel.createEntry("/FunctionSet", {
 					refreshAfterChange: true,
 					success: function () {
-						debugger;
 						this._bCreateMode = null;
 						MessageToast.show("Function copied successfully.");
 						// this.getView().byId("idSmartForm").setEditable(false);
@@ -386,7 +397,6 @@ sap.ui.define([
 					}.bind(this),
 
 					error: function (oError) {
-						debugger;
 						MessageBox.error("Function could not be copied.");
 						this.getView().setBusy(false);
 						// this._bCreateMode = null;
@@ -402,12 +412,17 @@ sap.ui.define([
 				this.setTableHeight();
 			},
 
-			showFunctionDetails: function (sPath, bVisible) {
+			showFunctionDetails: function (sPath, bEditable) {
 				this.getView().byId("idSFPanel").setVisible(true);
 				this.setTableHeight();
 				var oSmartForm = this.getView().byId("idSmartForm");
 				oSmartForm.setVisible(true);
-				oSmartForm.setEditable(bVisible);
+				if (oSmartForm.getModel().hasPendingChanges()) {
+					MessageToast.show("Please save or cancel the current changes transaction first.");
+					return;
+				}
+
+				oSmartForm.setEditable(bEditable);
 				if (oSmartForm.getEditable()) {
 					oSmartForm.setProperty("title", "Change Function");
 				} else {
@@ -424,11 +439,14 @@ sap.ui.define([
 			},
 
 			onEdit: function (oEvent) {
+				var oSmartForm = this.byId("idSmartForm"),
+					oModel = oSmartForm.getModel();
+
 				this._sPath = oEvent.getSource().getBindingContext().getPath();
 				var bChanged = false;
 
 				if (this._function !== null) {
-					if (this._function.FunctionID === oEvent.getSource().getBindingContext().getProperty("FunctionID")) {
+					if (this._function.FunctionID === oEvent.getSource().getBindingContext().getProperty("FunctionID") && oSmartForm.getEditable()) {
 						MessageToast.show("Function '" + this._function.FunctionID + "' is already being edited.");
 						return;
 					}
